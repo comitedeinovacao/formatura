@@ -153,7 +153,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
    HINO NACIONAL
    ============================================= */
 .s-hino{background:#000;padding:0;}
-.s-hino video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;}
+.s-hino iframe{position:absolute;inset:0;width:100%;height:100%;z-index:1;border:none;}
 .s-hino .hino-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,45,92,.4) 0%,rgba(0,0,0,.65) 100%);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;}
 .s-hino .hino-flag{font-size:96px;}
 .s-hino .t-big{text-align:center;font-size:clamp(40px,5.5vw,80px);}
@@ -401,9 +401,11 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 
 <!-- S13 HINO NACIONAL -->
 <div class="slide s-hino" id="slide-hino">
-  <video id="hinoVideo" playsinline>
-    <source src="Hino Nacional Brasileiro - Jean.mp4" type="video/mp4">
-  </video>
+  <iframe id="hinoIframe"
+    src="https://www.youtube.com/embed/niARFm-0krQ?enablejsapi=1&autoplay=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&color=white"
+    allow="autoplay; fullscreen"
+    allowfullscreen>
+  </iframe>
   <div class="hino-overlay">
     <div class="hino-flag fade d1">🇧🇷</div>
     <div class="t-big fade d2" style="text-align:center;">Hino Nacional<br><span class="lar">Brasileiro</span></div>
@@ -549,7 +551,24 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 
 <a href="admin.html" class="admin-link">admin</a>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
+// ── YOUTUBE PLAYER ─────────────────────────────────────────
+let hinoPlayer = null;
+function onYouTubeIframeAPIReady() {
+  hinoPlayer = new YT.Player('hinoIframe', {
+    events: {
+      onReady: function() {},
+      onStateChange: function(e) {
+        if (e.data === YT.PlayerState.ENDED) {
+          hinoPlayer.seekTo(0);
+          hinoPlayer.stopVideo();
+        }
+      }
+    }
+  });
+}
+
 // ── STATE ──────────────────────────────────────────────────
 let dados = { turmas: [] };
 let slides = [];
@@ -752,9 +771,11 @@ function goTo(idx) {
     setTimeout(() => tocarMusica(slide.dataset.musicaUrl, slide.dataset.musicaNome), 350);
   }
 
-  const hino = document.getElementById('hinoVideo');
-  if (slide.id === 'slide-hino') { hino.currentTime=0; hino.play().catch(()=>{}); }
-  else { hino.pause(); hino.currentTime=0; }
+  if (slide.id === 'slide-hino') {
+    if (hinoPlayer && hinoPlayer.seekTo) { hinoPlayer.seekTo(0); hinoPlayer.playVideo(); }
+  } else {
+    if (hinoPlayer && hinoPlayer.pauseVideo) { hinoPlayer.pauseVideo(); }
+  }
 
   document.getElementById('progress').style.width = (((current+1)/slides.length)*100)+'%';
   document.getElementById('scCur').textContent = pad(current+1);
