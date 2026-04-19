@@ -12,8 +12,9 @@
       "alunos": [
         {
           "nome": "Alice Miranda dos Santos",
-          "musicaUrl": "https://res.cloudinary.com/darxzoerw/video/upload/v1776603285/formatura/bno6kpwqljbys77haqmo.mp3",
-          "musicaNome": "Alice - Billy Joel - Vienna"
+          "musicaUrl": "https://res.cloudinary.com/darxzoerw/video/upload/v1776640726/formatura/shmooohox2tqh05txms7.mp3",
+          "musicaNome": "Alice - Billy Joel - Vienna",
+          "musicaInicio": 0
         },
         {
           "nome": "Aline dos Santos Silva Claudino",
