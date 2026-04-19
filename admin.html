@@ -526,6 +526,18 @@
   .modal-current-music { font-size: 12px; color: var(--muted); }
   .btn-modal-salvar { flex: 1; }
 
+  .badge-orador {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    background: rgba(247,148,29,.15); border: 1px solid rgba(247,148,29,.4);
+    color: var(--senac-orange); padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+  }
+  .btn-orador {
+    background: var(--dark3); border: 1px solid var(--border); color: var(--muted);
+    font-size: 13px; padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: all .2s;
+  }
+  .btn-orador:hover { border-color: var(--senac-orange); color: var(--senac-orange); }
+  .btn-orador.ativo { background: rgba(247,148,29,.15); border-color: var(--senac-orange); color: var(--senac-orange); }
+
   .token-bar {
     background: rgba(247,148,29,.07);
     border: 1px solid rgba(247,148,29,.2);
@@ -672,6 +684,24 @@
         <button class="btn btn-primary" onclick="adicionarAluno()">+ Adicionar Aluno</button>
       </div>
 
+      <!-- CERIMÔNIA -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">🎖️ Dados da Cerimônia</div>
+        <div class="form-group">
+          <label>Paraninfo(a)</label>
+          <input type="text" id="inputParaninfo" placeholder="Nome completo do(a) Paraninfo(a)">
+        </div>
+        <div class="form-group">
+          <label>Docente Homenageado(a)</label>
+          <input type="text" id="inputHomenageado" placeholder="Nome completo do(a) Docente">
+        </div>
+        <div class="form-group">
+          <label>Juramentista</label>
+          <input type="text" id="inputJuramentista" placeholder="Nome do(a) aluno(a) juramentista">
+        </div>
+        <button class="btn btn-primary" onclick="salvarCerimonia()">💾 Salvar Cerimônia</button>
+      </div>
+
     </div>
 
     <!-- COLUNA DIREITA: Lista de turmas e alunos -->
@@ -758,7 +788,7 @@ const UPLOAD_PRESET = 'senac-formatura';
 // ============================================================
 // STATE
 // ============================================================
-let dados = { turmas: [] };
+let dados = { turmas: [], paraninfo: '', homenageado: '', juramentista: '', orador: '' };
 let turmaAtiva = null;
 let pendingAudioUrl = null;
 let pendingAudioName = null;
@@ -768,7 +798,7 @@ let dragSrcIndex = null;
 // ============================================================
 // INIT
 // ============================================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57TkiXMXUeyiPDFnMyvEPpwU63FVXYG_D5_mHtg6yPL9ppsYK/exec';
+const GH_RAW = 'https://raw.githubusercontent.com/comitedeinovacao/formatura/main/dados.json';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Restaura token salvo
@@ -779,13 +809,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    const res = await fetch(API_URL);
-    if(res.ok) {
-      dados = await res.json();
-      localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+    const res = await fetch(GH_RAW + '?t=' + Date.now());
+    if (res.ok) {
+      const gh = await res.json();
+      if (gh?.turmas?.length >= 0) {
+        dados = gh;
+        localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+      }
     }
   } catch(e) {
-    console.error('Buscando offline...', e);
     const saved = localStorage.getItem('formatura-senac-dados');
     if (saved) {
       try { dados = JSON.parse(saved); } catch(er) {}
@@ -1109,6 +1141,29 @@ function renderTudo() {
   renderTabs();
   renderTurmaContent();
   atualizarSelectTurma();
+  popularCerimonia();
+}
+
+// ============================================================
+// CERIMÔNIA
+// ============================================================
+function popularCerimonia() {
+  document.getElementById('inputParaninfo').value = dados.paraninfo || '';
+  document.getElementById('inputHomenageado').value = dados.homenageado || '';
+  document.getElementById('inputJuramentista').value = dados.juramentista || '';
+}
+
+function salvarCerimonia() {
+  dados.paraninfo = document.getElementById('inputParaninfo').value.trim();
+  dados.homenageado = document.getElementById('inputHomenageado').value.trim();
+  dados.juramentista = document.getElementById('inputJuramentista').value.trim();
+  salvar();
+}
+
+function definirOrador(nome) {
+  dados.orador = (dados.orador === nome) ? '' : nome;
+  salvar();
+  renderTurmaContent();
 }
 
 function renderTabs() {
@@ -1193,7 +1248,10 @@ function renderTurmaContent() {
                 : `<span class="music-badge no-music">Sem música</span>`
               }
             </div>
-            <div style="display:flex;gap:6px;">
+            <div style="display:flex;gap:6px;align-items:center;">
+              ${dados.orador === a.nome ? `<span class="badge-orador">Orador(a)</span>` : ''}
+              <button class="btn-orador ${dados.orador === a.nome ? 'ativo' : ''}"
+                onclick="definirOrador('${a.nome.replace(/'/g, "\\'")}')">🎤</button>
               <button class="btn btn-sm" style="background:var(--dark3);border:1px solid var(--border);color:var(--text);"
                 onclick="abrirModal('${turma.id}', ${i})">✏️</button>
               <button class="btn btn-sm btn-danger"
