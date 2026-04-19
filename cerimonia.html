@@ -640,34 +640,55 @@ const API_URL  = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57Tk
 const GH_RAW   = 'https://raw.githubusercontent.com/comitedeinovacao/formatura/main/dados.json';
 
 async function carregarDados() {
-  // 1. GitHub (fonte principal — cross-device, dados completos)
+  // Lê localStorage sempre — preserva musicaInicio definido no admin
+  let local = null;
+  try {
+    const s = localStorage.getItem('formatura-senac-dados');
+    if (s) local = JSON.parse(s);
+  } catch(e) {}
+
+  // Função auxiliar: mescla musicaInicio do local no objeto remoto
+  function mesclarInicio(remoto, origem) {
+    if (!origem?.turmas?.length) return;
+    remoto.turmas?.forEach(turma => {
+      const lt = origem.turmas.find(t => t.id === turma.id);
+      turma.alunos?.forEach(aluno => {
+        const la = lt?.alunos?.find(a => a.nome === aluno.nome);
+        if (la?.musicaInicio > 0) aluno.musicaInicio = la.musicaInicio;
+      });
+    });
+  }
+
+  // 1. GitHub — dados completos, cross-device
   try {
     const res = await fetch(GH_RAW + '?t=' + Date.now());
     if (res.ok) {
       const gh = await res.json();
       if (gh?.turmas?.length > 0) {
+        mesclarInicio(gh, local); // preserva musicaInicio do admin local
         dados = gh;
         localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
-        return;
       }
     }
   } catch(e) {}
 
-  // 2. Google Sheets API (fallback — não preserva musicaInicio)
-  try {
-    const res = await fetch(API_URL);
-    if (res.ok) {
-      dados = await res.json();
-      localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
-      return;
-    }
-  } catch(e) {}
+  // 2. Se ainda sem dados, tenta Google Sheets
+  if (!dados.turmas?.length) {
+    try {
+      const res = await fetch(API_URL);
+      if (res.ok) {
+        const sheets = await res.json();
+        mesclarInicio(sheets, local);
+        dados = sheets;
+        localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+      }
+    } catch(e) {}
+  }
 
-  // 3. localStorage (último recurso — mesmo dispositivo)
-  try {
-    const s = localStorage.getItem('formatura-senac-dados');
-    if (s) dados = JSON.parse(s);
-  } catch(e) {}
+  // 3. Último recurso: localStorage
+  if (!dados.turmas?.length && local?.turmas?.length) {
+    dados = local;
+  }
 
   const cursos = dados.turmas.map(t => t.nome).join(' · ');
   document.getElementById('capa-cursos').textContent    = cursos || 'Área de Gestão e Negócios';
@@ -820,23 +841,29 @@ function prevSlide(){ goTo(current-1); }
 // ── ÁUDIO ──────────────────────────────────────────────────
 function tocarMusica(url, nome, inicio = 0) {
   if (!url) return;
+
+  const mostrarIndicador = () => {
+    document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
+    document.getElementById('audioInd').classList.add('show');
+  };
+
   audio.volume = .85;
   audio.src = url;
 
   if (inicio > 0) {
+    // 1. Aguarda metadados (sabe a duração) → define posição
     audio.addEventListener('loadedmetadata', function() {
       audio.currentTime = inicio;
-      audio.play().then(() => {
-        document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
-        document.getElementById('audioInd').classList.add('show');
-      }).catch(() => {});
     }, { once: true });
+
+    // 2. Aguarda seek concluído → toca (único evento que garante posição correta)
+    audio.addEventListener('seeked', function() {
+      audio.play().then(mostrarIndicador).catch(() => {});
+    }, { once: true });
+
     audio.load();
   } else {
-    audio.play().then(() => {
-      document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
-      document.getElementById('audioInd').classList.add('show');
-    }).catch(() => {});
+    audio.play().then(mostrarIndicador).catch(() => {});
   }
 }
 
