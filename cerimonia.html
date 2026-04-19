@@ -793,14 +793,11 @@ function tocarMusica(url, nome, inicio = 0) {
   if (!url) return;
   audio.src = url;
   audio.volume = .85;
-  audio.addEventListener('canplay', function onCanPlay() {
-    audio.removeEventListener('canplay', onCanPlay);
-    audio.currentTime = inicio;
-    audio.play().then(() => {
-      document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
-      document.getElementById('audioInd').classList.add('show');
-    }).catch(()=>{});
-  }, { once: true });
+  audio.play().then(() => {
+    if (inicio > 0) audio.currentTime = inicio;
+    document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
+    document.getElementById('audioInd').classList.add('show');
+  }).catch(()=>{});
 }
 
 function pararAudio() {
