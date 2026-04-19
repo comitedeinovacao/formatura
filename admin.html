@@ -715,10 +715,21 @@ let dragSrcIndex = null;
 // ============================================================
 // INIT
 // ============================================================
-document.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('formatura-senac-dados');
-  if (saved) {
-    try { dados = JSON.parse(saved); } catch(e) {}
+const API_URL = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57TkiXMXUeyiPDFnMyvEPpwU63FVXYG_D5_mHtg6yPL9ppsYK/exec';
+
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch(API_URL);
+    if(res.ok) {
+      dados = await res.json();
+      localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+    }
+  } catch(e) {
+    console.error('Buscando offline...', e);
+    const saved = localStorage.getItem('formatura-senac-dados');
+    if (saved) {
+      try { dados = JSON.parse(saved); } catch(er) {}
+    }
   }
   renderTudo();
 
@@ -737,8 +748,25 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 // SAVE
 // ============================================================
-function salvar() {
+async function salvar() {
   localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+  
+  // Sincronizar na nuvem
+  try {
+    const origText = document.getElementById('toastMsg') ? document.getElementById('toastMsg').textContent : '';
+    showToast('Salvando na nuvem...', 'info');
+    
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(dados)
+    });
+    
+    const json = await res.json();
+    if(json.success) showToast('Salvo com sucesso!');
+    else showToast('Erro na nuvem', 'error');
+  } catch(e) {
+    showToast('Sem conexão (salvo offline)', 'error');
+  }
 }
 
 // ============================================================

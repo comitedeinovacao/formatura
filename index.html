@@ -561,8 +561,8 @@ const audio = document.getElementById('bgAudio');
 function pad(n){ return String(n).padStart(2,'0'); }
 
 // ── INIT ───────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  carregarDados();
+document.addEventListener('DOMContentLoaded', async () => {
+  await carregarDados();
   gerarSlidesDinamicos();
   construirSlides();
   construirDots();
@@ -602,11 +602,22 @@ function iniciarParticulasParabens() {
 }
 
 // ── DADOS ──────────────────────────────────────────────────
-function carregarDados() {
+const API_URL = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57TkiXMXUeyiPDFnMyvEPpwU63FVXYG_D5_mHtg6yPL9ppsYK/exec';
+
+async function carregarDados() {
   try {
-    const s = localStorage.getItem('formatura-senac-dados');
-    if (s) dados = JSON.parse(s);
-  } catch(e){}
+    const res = await fetch(API_URL);
+    if(res.ok) {
+      dados = await res.json();
+      localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+    }
+  } catch(e) {
+    console.error('Buscando offline...', e);
+    try {
+      const s = localStorage.getItem('formatura-senac-dados');
+      if (s) dados = JSON.parse(s);
+    } catch(err){}
+  }
 
   const cursos = dados.turmas.map(t => t.nome).join(' · ');
   document.getElementById('capa-cursos').textContent    = cursos || 'Área de Gestão e Negócios';
