@@ -25,3 +25,9 @@ Thumbs.db
 # Build
 dist/
 build/
+
+# Vídeos grandes (limite GitHub 100MB)
+*.mp4
+*.MP4
+*.mov
+*.avi

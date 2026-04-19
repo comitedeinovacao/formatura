@@ -6,804 +6,148 @@
 <title>Colação de Grau — Senac Araçatuba</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
 <style>
 :root{
   --azul:#004587;
   --azul-escuro:#002D5C;
   --azul-mid:#003A75;
-  --azul-claro:#005BB5;
   --laranja:#F7941D;
-  --branco:#FFFFFF;
-  --preto:#0A0A0A;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-serif;background:#000;color:#fff;-webkit-font-smoothing:antialiased;}
-.deck{position:relative;width:100%;height:100vh;overflow:hidden;}
+html,body{width:100%;height:100%;font-family:'Montserrat',sans-serif;background:var(--azul-escuro);color:#fff;-webkit-font-smoothing:antialiased;overflow:hidden;}
 
-/* Progress bar */
-.progress-bar{position:fixed;top:0;left:0;height:4px;background:var(--laranja);z-index:100;transition:width .5s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px rgba(247,148,29,.5);}
+/* ── FUNDO ── */
+.bg{position:fixed;inset:0;background:linear-gradient(135deg,var(--azul-escuro) 0%,var(--azul-mid) 60%,var(--azul-escuro) 100%);z-index:0;}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:52px 52px;z-index:1;pointer-events:none;}
+.rings{position:fixed;top:50%;left:50%;pointer-events:none;z-index:1;}
+.ring{position:absolute;top:0;left:0;transform:translate(-50%,-50%);border:1px solid rgba(247,148,29,.06);border-radius:50%;animation:pulse 3s infinite alternate ease-in-out;}
+.ring.r1{width:500px;height:500px;animation-delay:0s;}
+.ring.r2{width:800px;height:800px;animation-delay:.6s;}
+.ring.r3{width:1100px;height:1100px;animation-delay:1.2s;}
+.scanline{position:fixed;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(247,148,29,.12),transparent);animation:scanline 6s linear infinite;z-index:2;pointer-events:none;}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:1;}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(247,148,29,.1),transparent 70%);top:-150px;right:-100px;animation:orbFloat 8s ease-in-out infinite;}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(0,91,181,.15),transparent 70%);bottom:-100px;left:-80px;animation:orbFloat 10s ease-in-out infinite;animation-delay:-4s;}
 
-/* Slide counter */
-.slide-counter{position:fixed;top:18px;right:24px;z-index:100;color:#fff;font-weight:600;font-size:13px;letter-spacing:2px;background:rgba(0,0,0,.25);padding:8px 18px;border-radius:20px;backdrop-filter:blur(6px);white-space:nowrap;line-height:1;}
-.slide-counter .sc-cur{color:var(--laranja);}
+@keyframes pulse{0%{opacity:.5;transform:translate(-50%,-50%) scale(1);}100%{opacity:1;transform:translate(-50%,-50%) scale(1.03);}}
+@keyframes scanline{0%{top:-2px;}100%{top:100%;}}
+@keyframes orbFloat{0%,100%{transform:translate(0,0);}50%{transform:translate(20px,-30px);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
 
-/* Slides */
-.slide{position:absolute;inset:0;width:100%;height:100vh;padding:60px 80px 80px;display:flex;opacity:0;visibility:hidden;transition:opacity .5s ease;overflow:hidden;}
-.slide.active{opacity:1;visibility:visible;}
-.slide .inner{position:relative;z-index:5;width:100%;height:100%;display:flex;flex-direction:column;}
+/* ── LAYOUT ── */
+.page{position:relative;z-index:10;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;gap:48px;}
 
-/* Arrows */
-.nav-arrow{position:fixed;top:50%;transform:translateY(-50%);z-index:90;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;backdrop-filter:blur(6px);font-size:16px;}
-.nav-arrow:hover{background:var(--laranja);border-color:var(--laranja);}
-.nav-prev{left:24px;}
-.nav-next{right:24px;}
+/* ── CABEÇALHO ── */
+.header{text-align:center;animation:fadeUp .7s .1s both;}
+.kicker{font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--laranja);margin-bottom:12px;}
+.linha-laranja{height:3px;width:60px;background:var(--laranja);border-radius:2px;margin:12px auto 16px;}
+.titulo{font-size:clamp(22px,3.5vw,36px);font-weight:900;line-height:1.05;text-transform:uppercase;letter-spacing:-1px;}
+.titulo .lar{color:var(--laranja);}
+.subtitulo{font-size:clamp(11px,1.1vw,14px);font-weight:500;color:rgba(255,255,255,.45);letter-spacing:3px;text-transform:uppercase;margin-top:10px;}
 
-/* Footer */
-.footer{position:fixed;bottom:0;left:0;right:0;height:48px;background:rgba(0,0,0,.25);backdrop-filter:blur(8px);z-index:80;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-top:1px solid rgba(255,255,255,.06);}
-.footer-left{color:var(--laranja);font-weight:700;font-size:11px;letter-spacing:2px;}
-.footer-right{color:rgba(255,255,255,.5);font-weight:500;font-size:11px;letter-spacing:2px;}
-.dots{display:flex;gap:8px;}
-.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:all .3s;}
-.dot.active{background:var(--laranja);transform:scale(1.4);}
-.dot:hover{background:rgba(255,255,255,.5);}
+/* ── CARDS ── */
+.cards{display:flex;gap:24px;animation:fadeUp .7s .35s both;}
+@media(max-width:600px){.cards{flex-direction:column;gap:16px;width:100%;}}
 
-/* =============================================
-   ANIMAÇÕES
-   ============================================= */
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
-@keyframes expandeLinha{from{width:0;}to{width:var(--line-w,80px);}}
-@keyframes slideInLeft{from{opacity:0;transform:translateX(-60px);}to{opacity:1;transform:translateX(0);}}
-@keyframes slideInRight{from{opacity:0;transform:translateX(60px);}to{opacity:1;transform:translateX(0);}}
-@keyframes flutuacao{from{transform:translateY(0);}to{transform:translateY(-20px);}}
-@keyframes pulse{from{transform:scale(1);}to{transform:scale(1.05);}}
-@keyframes shimmer{0%{background-position:0% center;}100%{background-position:200% center;}}
-@keyframes floatUp{0%{transform:translateY(100vh) scale(1);opacity:0;}10%{opacity:.6;}90%{opacity:.4;}100%{transform:translateY(-10vh) scale(.5);opacity:0;}}
-@keyframes wave{0%,100%{height:3px;}50%{height:13px;}}
-@keyframes orbFloat{0%{transform:translate(0,0) scale(1);opacity:.12;}50%{transform:translate(30px,-40px) scale(1.15);opacity:.2;}100%{transform:translate(0,0) scale(1);opacity:.12;}}
-@keyframes diagonalPulse{0%,100%{box-shadow:-40px 0 80px rgba(247,148,29,.18);}50%{box-shadow:-60px 0 120px rgba(247,148,29,.38),inset 0 0 40px rgba(255,255,255,.06);}}
-@keyframes scanline{0%{top:-100%;}100%{top:200%;}}
-
-.slide.active .fade{animation:fadeUp .7s cubic-bezier(.2,.7,.2,1) both;}
-.slide.active .d1{animation-delay:.1s;}
-.slide.active .d2{animation-delay:.3s;}
-.slide.active .d3{animation-delay:.55s;}
-.slide.active .d4{animation-delay:.75s;}
-.slide.active .d5{animation-delay:.95s;}
-
-.linha-laranja{height:3px;background:var(--laranja);border-radius:2px;--line-w:80px;width:80px;}
-.slide.active .linha-laranja{animation:expandeLinha .9s .4s cubic-bezier(.2,.7,.2,1) both;width:0;}
-
-/* =============================================
-   PARTÍCULAS / DECORAÇÃO
-   ============================================= */
-.particulas{position:absolute;inset:0;pointer-events:none;z-index:1;}
-.particula{position:absolute;border-radius:50%;opacity:.35;animation:flutuacao 4s infinite alternate ease-in-out;}
-.float-p{position:absolute;bottom:-20px;border-radius:50%;animation:floatUp linear infinite;z-index:1;}
-.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:52px 52px;z-index:0;pointer-events:none;}
-.rings{position:absolute;top:50%;left:50%;pointer-events:none;z-index:1;}
-.ring{position:absolute;top:0;left:0;transform:translate(-50%,-50%);border:1px solid rgba(247,148,29,.07);border-radius:50%;animation:pulse 3s infinite alternate ease-in-out;}
-.ring.r1{width:400px;height:400px;animation-delay:0s;}
-.ring.r2{width:660px;height:660px;animation-delay:.5s;}
-.ring.r3{width:920px;height:920px;animation-delay:1s;}
-
-/* Orb de luz — efeito futurista em todos os padrao */
-.slide-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:1;animation:orbFloat 6s ease-in-out infinite;}
-.slide-orb.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(247,148,29,.14),transparent 70%);top:-100px;left:-100px;animation-duration:7s;}
-.slide-orb.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(0,91,181,.18),transparent 70%);bottom:-80px;left:100px;animation-duration:9s;animation-delay:-3s;}
-
-/* Scanline futurista */
-.scanline{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(247,148,29,.15),transparent);animation:scanline 5s linear infinite;z-index:2;pointer-events:none;}
-
-/* =============================================
-   PADRÃO: fundo azul-escuro + diagonal laranja
-   ============================================= */
-.slide-padrao{background:linear-gradient(135deg,var(--azul-escuro) 0%,var(--azul-mid) 100%);}
-.slide-padrao .bg-diagonal{display:none;}
-.slide-padrao .bg-img{display:none;}
-.slide-padrao .inner{display:flex;flex-direction:column;justify-content:center;max-width:80%;}
-
-/* Tipografia */
-.kicker{font-size:clamp(11px,1.1vw,16px);font-weight:700;color:var(--laranja);letter-spacing:4px;text-transform:uppercase;text-shadow:0 0 20px rgba(247,148,29,.4);}
-.t-big{font-weight:900;font-size:clamp(64px,9vw,130px);line-height:.9;text-transform:uppercase;letter-spacing:-2px;color:#fff;margin-top:12px;}
-.t-big .lar{color:var(--laranja);}
-.t-script{font-family:'Montserrat', sans-serif;font-weight:700;font-style:italic;font-size:clamp(36px,5vw,72px);color:rgba(255,255,255,.7);margin-top:4px;letter-spacing:2px;text-transform:uppercase;line-height:1.1;}
-.t-sub{font-size:clamp(13px,1.3vw,20px);font-weight:500;color:rgba(255,255,255,.55);letter-spacing:3px;margin-top:18px;text-transform:uppercase;}
-.t-nome{font-weight:900;font-size:clamp(44px,6vw,90px);line-height:1;text-transform:uppercase;letter-spacing:-.5px;color:#fff;margin-top:10px;}
-.t-nome .primeiro{color:var(--laranja);text-shadow:0 0 40px rgba(247,148,29,.3);}
-.t-role{font-size:clamp(12px,1.1vw,18px);font-weight:600;color:rgba(255,255,255,.45);letter-spacing:3px;text-transform:uppercase;margin-top:10px;}
-
-/* Dots decorativos */
-.deco-dots{display:grid;grid-template-columns:repeat(3,10px);gap:9px;margin-top:36px;}
-.deco-dots span{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.18);display:block;}
-
-/* =============================================
-   CAPA
-   ============================================= */
-.s-capa{background:linear-gradient(135deg,var(--azul-escuro) 0%,var(--azul) 60%,var(--azul-escuro) 100%);align-items:center;justify-content:center;}
-.s-capa .bg-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.1;z-index:0;mix-blend-mode:luminosity;}
-.s-capa .inner{align-items:center;text-align:center;justify-content:center;}
-.s-capa .kicker{animation:slideInLeft .8s cubic-bezier(.2,.7,.2,1) both;}
-.s-capa .t-big{animation:slideInRight .8s cubic-bezier(.2,.7,.2,1) both .2s;}
-.s-capa .t-sub{animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) both .4s;}
-
-/* =============================================
-   SLIDE DE CURSO
-   ============================================= */
-.s-curso{background:linear-gradient(135deg,var(--azul) 0%,var(--azul-escuro) 100%);align-items:center;justify-content:center;}
-.s-curso .inner{align-items:center;text-align:center;justify-content:center;}
-.s-curso .t-big{font-size:clamp(36px,5vw,72px);text-align:center;}
-.s-curso .t-sub{text-align:center;}
-
-/* =============================================
-   ALUNO ENTRADA
-   ============================================= */
-.s-aluno-entrada{background:linear-gradient(140deg,var(--azul-escuro) 0%,var(--azul-mid) 100%);}
-.s-aluno-entrada .bg-diagonal{display:none;}
-.s-aluno-entrada .inner{max-width:80%;display:flex;flex-direction:column;justify-content:center;}
-
-/* =============================================
-   ALUNO CERTIFICADO
-   ============================================= */
-.s-aluno-cert{background:linear-gradient(140deg,var(--azul-mid) 0%,var(--azul) 100%);}
-.s-aluno-cert .bg-diagonal{display:none;}
-.s-aluno-cert .inner{max-width:80%;display:flex;flex-direction:column;justify-content:center;}
-
-/* =============================================
-   HINO NACIONAL
-   ============================================= */
-.s-hino{background:#000;padding:0;}
-.s-hino video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;}
-.s-hino .hino-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,45,92,.4) 0%,rgba(0,0,0,.65) 100%);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;}
-.s-hino .hino-flag{font-size:96px;}
-.s-hino .t-big{text-align:center;font-size:clamp(40px,5.5vw,80px);}
-
-/* =============================================
-   PARABÉNS
-   ============================================= */
-.s-parabens{background:radial-gradient(circle at center,rgba(247,148,29,.12) 0%,var(--azul-escuro) 65%);align-items:center;justify-content:center;}
-.s-parabens .inner{align-items:center;text-align:center;justify-content:center;}
-.s-parabens .t-big{
-  background:linear-gradient(90deg,var(--laranja) 0%,#ffcf7d 40%,var(--laranja) 80%,#ffcf7d 100%);
-  background-size:200% auto;
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  animation:flutuacao 3s ease-in-out infinite alternate, shimmer 3s linear infinite;
+.card{
+  position:relative;overflow:hidden;
+  width:280px;padding:36px 28px;border-radius:16px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:16px;
+  cursor:pointer;text-decoration:none;color:#fff;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease;
 }
-.s-parabens .linha-laranja{background:var(--laranja);margin:24px auto;}
+.card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.4);border-color:rgba(247,148,29,.45);background:rgba(247,148,29,.07);}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(247,148,29,.08),transparent 60%);opacity:0;transition:opacity .25s;}
+.card:hover::before{opacity:1;}
 
-/* =============================================
-   ÁUDIO INDICATOR
-   ============================================= */
-.audio-ind{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:100;background:rgba(0,0,0,.55);border:1px solid rgba(247,148,29,.5);border-radius:24px;padding:8px 20px;font-size:12px;font-weight:700;color:var(--laranja);letter-spacing:1px;display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .3s;backdrop-filter:blur(6px);}
-.audio-ind.show{opacity:1;}
-.audio-wave{display:flex;gap:3px;align-items:center;height:14px;}
-.audio-wave span{width:3px;background:var(--laranja);border-radius:2px;animation:wave .8s ease-in-out infinite;}
-.audio-wave span:nth-child(1){animation-delay:0s;}
-.audio-wave span:nth-child(2){animation-delay:.1s;}
-.audio-wave span:nth-child(3){animation-delay:.2s;}
-.audio-wave span:nth-child(4){animation-delay:.3s;}
+.card-icon{width:48px;height:48px;border-radius:12px;background:rgba(247,148,29,.15);border:1px solid rgba(247,148,29,.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.card-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--laranja);}
+.card-title{font-size:clamp(20px,2.5vw,26px);font-weight:900;text-transform:uppercase;letter-spacing:-0.5px;line-height:1.05;}
+.card-desc{font-size:12px;font-weight:500;color:rgba(255,255,255,.45);line-height:1.6;letter-spacing:.3px;}
+.card-action{margin-top:8px;display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--laranja);}
+.card-action svg{transition:transform .2s;}
+.card:hover .card-action svg{transform:translateX(4px);}
 
-.admin-link{position:fixed;bottom:6px;left:10px;z-index:200;font-size:10px;color:rgba(255,255,255,.06);text-decoration:none;font-family:monospace;}
-.admin-link:hover{color:rgba(255,255,255,.35);}
+/* ── RODAPÉ ── */
+.footer-line{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);animation:fadeUp .7s .55s both;}
 </style>
 </head>
 <body>
 
-<div class="progress-bar" id="progress"></div>
-<div class="slide-counter"><span class="sc-cur" id="scCur">01</span>&nbsp;<span style="opacity:.4">/ <span id="scTot">01</span></span></div>
-
-<button class="nav-arrow nav-prev" onclick="prevSlide()">&#8592;</button>
-<button class="nav-arrow nav-next" onclick="nextSlide()">&#8594;</button>
-
-<div class="audio-ind" id="audioInd">
-  <div class="audio-wave"><span></span><span></span><span></span><span></span></div>
-  <span id="audioIndText">Música de entrada</span>
+<div class="bg"></div>
+<div class="grid-bg"></div>
+<div class="rings">
+  <div class="ring r1"></div>
+  <div class="ring r2"></div>
+  <div class="ring r3"></div>
 </div>
+<div class="scanline"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
 
-<audio id="bgAudio" preload="none"></audio>
+<div class="page">
 
-<div class="deck" id="deck">
-
-<!-- S01 CAPA -->
-<div class="slide s-capa">
-  <div class="particulas" id="p1"></div>
-  <div class="rings"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div></div>
-  <div class="scanline"></div>
-  <img class="bg-foto" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=80" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Senac Araçatuba · Gestão e Negócios</div>
-    <div class="linha-laranja fade d2" style="margin:16px auto;"></div>
-    <div class="t-big fade d3"><span class="lar">Cerimônia</span> de<br>Colação<br><span class="lar">de Grau</span></div>
-    <div class="t-sub fade d4" id="capa-cursos">Área de Gestão e Negócios</div>
+  <div class="header">
+    <div class="kicker">Senac Araçatuba · Gestão e Negócios</div>
+    <div class="linha-laranja"></div>
+    <div class="titulo"><span class="lar">Colação</span> de Grau<br>2026</div>
+    <div class="subtitulo">Selecione uma opção para continuar</div>
   </div>
-</div>
 
-<!-- S02 BEM-VINDO -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="senac-fachada.jpg.jpg" alt="Senac Araçatuba">
-  <div class="inner">
-    <div class="kicker fade d1">Seja bem-vindo</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Senac</span><br>Araçatuba</div>
-    <div class="t-script fade d4">É bom ter você aqui!</div>
-    <div class="t-sub fade d5" id="bemvindo-sub">Gestão e Negócios · Senac Araçatuba</div>
+  <div class="cards">
+
+    <!-- CARD CERIMÔNIA -->
+    <a class="card" href="#" id="btnCerimonia">
+      <div class="card-icon">🎓</div>
+      <div>
+        <div class="card-label">Apresentação</div>
+        <div class="card-title">Cerimônia</div>
+      </div>
+      <div class="card-desc">Inicia a apresentação da solenidade em tela cheia para projeção.</div>
+      <div class="card-action">
+        Abrir em tela cheia
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <!-- CARD ADMINISTRAÇÃO -->
+    <a class="card" href="admin.html">
+      <div class="card-icon">⚙️</div>
+      <div>
+        <div class="card-label">Configuração</div>
+        <div class="card-title">Administração</div>
+      </div>
+      <div class="card-desc">Cadastre turmas, alunos, paraninfos e dados da cerimônia.</div>
+      <div class="card-action">
+        Acessar painel
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
   </div>
+
+  <div class="footer-line">Senac Araçatuba · Colação de Grau · 2026</div>
+
 </div>
-
-<!-- S03 ABERTURA SOLENE -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_sala-experimental1.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Início da cerimônia</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3">Abertura</div>
-    <div class="t-big fade d4"><span class="lar">Solene</span></div>
-    <div class="t-sub fade d5">Mestre de Cerimônias</div>
-  </div>
-</div>
-
-<!-- S04 COMPOSIÇÃO DA MESA -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_sala-convencional2.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Mesa diretiva</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3"><span class="primeiro">Composição</span><br>da Mesa</div>
-    <div class="t-big fade d4"><span class="lar">Solene</span></div>
-  </div>
-</div>
-
-<!-- S05 LUÍS ANTÔNIO -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_laboratorio-tecnologia1.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Composição da Mesa Solene</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3"><span class="primeiro">Luís Antônio</span><br>de Lima</div>
-    <div class="t-role fade d4">Diretor do Senac Araçatuba</div>
-  </div>
-</div>
-
-<!-- S06 REJAN -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_laboratorio-tecnologia-cisco2.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Composição da Mesa Solene</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3"><span class="primeiro">Rejan Belmiro</span><br>Pompeo Filho</div>
-    <div class="t-role fade d4">Coordenador Técnico · Gestão e Negócios</div>
-  </div>
-</div>
-
-<!-- S07 MILCA -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_sala-experimental2.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Composição da Mesa Solene</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3"><span class="primeiro">Milca de Assis</span><br>V. Rodrigues</div>
-    <div class="t-role fade d4">Coordenadora Técnica Educacional</div>
-  </div>
-</div>
-
-<!-- S08 PARANINFO -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_laboratorio-interpretacao3.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Composição da Mesa Solene</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-paraninfo"><span class="primeiro">Docente</span><br>Paraninfo</div>
-    <div class="t-role fade d4">Docente Paraninfo da Turma</div>
-  </div>
-</div>
-
-<!-- S09 HOMENAGEADO -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_laboratorio-movel2.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Composição da Mesa Solene</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-homenageado"><span class="primeiro">Docente</span><br>Homenageado</div>
-    <div class="t-role fade d4">Docente do Curso</div>
-  </div>
-</div>
-
-<!-- S10 CORPO DOCENTE -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_laboratorio-hardware4.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Homenagem</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Corpo</span><br>Docente</div>
-  </div>
-</div>
-
-<!-- S11 ENTRADA DOS FORMANDOS -->
-<div class="slide slide-padrao" id="ref-entrada">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_sala-experimental1.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Protagonistas da noite</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3">Entrada dos</div>
-    <div class="t-big fade d4"><span class="lar">Formandos</span></div>
-  </div>
-</div>
-
-<!-- [ALUNOS ENTRADA — inserção dinâmica] -->
-
-<!-- S12 ABERTURA DA SOLENIDADE -->
-<div class="slide slide-padrao" id="ref-abert-sol">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_sala-convencional2.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Abertura oficial</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3"><span class="primeiro">Luís Antônio</span><br>Lima</div>
-    <div class="t-role fade d4">Abertura da Solenidade</div>
-  </div>
-</div>
-
-<!-- S13 HINO NACIONAL -->
-<div class="slide s-hino" id="slide-hino">
-  <video id="hinoVideo" playsinline>
-    <source src="Hino Nacional Brasileiro - Jean.mp4" type="video/mp4">
-  </video>
-  <div class="hino-overlay">
-    <div class="hino-flag fade d1">🇧🇷</div>
-    <div class="t-big fade d2" style="text-align:center;">Hino Nacional<br><span class="lar">Brasileiro</span></div>
-  </div>
-</div>
-
-<!-- S14 DISCURSO DA TURMA -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_sala-experimental2.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Discurso</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-orador">Orador(a) da Turma</div>
-    <div class="t-role fade d4">Discurso da Turma</div>
-  </div>
-</div>
-
-<!-- S15 DISCURSO DO DOCENTE -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_laboratorio-interpretacao3.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Paraninfo</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-paraninfo-disc">Docente Paraninfo</div>
-    <div class="t-role fade d4">Discurso do Docente</div>
-  </div>
-</div>
-
-<!-- S16 JURAMENTO -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <div class="inner">
-    <div class="kicker fade d1">Rito solene</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-juramentista">Juramentista</div>
-    <div class="t-role fade d4">Juramento da Turma</div>
-  </div>
-</div>
-
-<!-- S17 CAPELO -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_laboratorio-tecnologia1.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Momento especial</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Capelo</span><br>da Turma</div>
-  </div>
-</div>
-
-<!-- S18 ENTREGA DO CERTIFICADO -->
-<div class="slide slide-padrao" id="ref-cert">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_laboratorio-hardware4.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Rito de entrega</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Entrega</span><br>do<br>Certificado</div>
-  </div>
-</div>
-
-<!-- [ALUNOS CERTIFICADO — inserção dinâmica] -->
-
-<!-- S19 AGRADECIMENTO FAMILIARES -->
-<div class="slide slide-padrao" id="ref-familia">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_sala-experimental2.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Com gratidão</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3"><span class="primeiro">Agradecimento</span><br>aos Familiares</div>
-  </div>
-</div>
-
-<!-- S20 ENCERRAMENTO -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <div class="inner">
-    <div class="kicker fade d1">Até logo</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3"><span class="primeiro">Encerramento</span><br>da Solenidade</div>
-    <div class="deco-dots fade d4">
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-    </div>
-  </div>
-</div>
-
-<!-- S21 PARABÉNS -->
-<div class="slide s-parabens">
-  <div class="particulas" id="p21"></div>
-  <div class="rings"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div></div>
-  <div class="scanline"></div>
-  <div class="inner">
-    <div class="t-big fade d1">PARABÉNS!</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-sub fade d3" id="parabens-turmas">Novos Técnicos · Senac Araçatuba</div>
-  </div>
-</div>
-
-</div><!-- /deck -->
-
-<!-- Footer -->
-<div class="footer">
-  <div class="footer-left">SENAC ARAÇATUBA · GESTÃO E NEGÓCIOS</div>
-  <div class="dots" id="dotsContainer"></div>
-  <div class="footer-right">COLAÇÃO DE GRAU · 2026</div>
-</div>
-
-<a href="admin.html" class="admin-link">admin</a>
 
 <script>
-// ── STATE ──────────────────────────────────────────────────
-let dados = { turmas: [] };
-let slides = [];
-let dots   = [];
-let current = 0;
-const audio = document.getElementById('bgAudio');
-
-function pad(n){ return String(n).padStart(2,'0'); }
-
-// ── INIT ───────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async () => {
-  await carregarDados();
-  gerarSlidesDinamicos();
-  construirSlides();
-  construirDots();
-  goTo(0);
-  configurarControles();
-  iniciarParticulasCapa();
-  iniciarParticulasParabens();
+document.getElementById('btnCerimonia').addEventListener('click', function(e) {
+  e.preventDefault();
+  const win = window.open('cerimonia.html', '_blank');
+  if (win) {
+    win.addEventListener('load', function() {
+      const el = win.document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+      if (req) req.call(el);
+    });
+  }
 });
-
-// ── PARTÍCULAS ─────────────────────────────────────────────
-function makeParticles(containerId, count, colors) {
-  const c = document.getElementById(containerId);
-  if (!c) return;
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement('div');
-    p.className = 'particula';
-    const size = 3 + Math.random() * 6;
-    p.style.cssText = `width:${size}px;height:${size}px;background:${colors[i % colors.length]};left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${3 + Math.random()*4}s;`;
-    c.appendChild(p);
-  }
-}
-
-function iniciarParticulasCapa() {
-  makeParticles('p1', 22, ['#F7941D','#004587','#ffffff','rgba(247,148,29,.5)']);
-}
-
-function iniciarParticulasParabens() {
-  const c = document.getElementById('p21');
-  if (!c) return;
-  for (let i = 0; i < 26; i++) {
-    const p = document.createElement('div');
-    p.className = 'float-p';
-    const size = 4 + Math.random() * 8;
-    p.style.cssText = `width:${size}px;height:${size}px;background:${i%2===0?'#fff':'#F7941D'};opacity:.5;left:${Math.random()*100}%;animation-duration:${7 + Math.random()*8}s;animation-delay:${Math.random()*10}s;`;
-    c.appendChild(p);
-  }
-}
-
-// ── DADOS ──────────────────────────────────────────────────
-const API_URL = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57TkiXMXUeyiPDFnMyvEPpwU63FVXYG_D5_mHtg6yPL9ppsYK/exec';
-
-async function carregarDados() {
-  try {
-    const res = await fetch(API_URL);
-    if(res.ok) {
-      dados = await res.json();
-      localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
-    }
-  } catch(e) {
-    console.error('Buscando offline...', e);
-    try {
-      const s = localStorage.getItem('formatura-senac-dados');
-      if (s) dados = JSON.parse(s);
-    } catch(err){}
-  }
-
-  const cursos = dados.turmas.map(t => t.nome).join(' · ');
-  document.getElementById('capa-cursos').textContent    = cursos || 'Área de Gestão e Negócios';
-  document.getElementById('bemvindo-sub').textContent   = cursos || 'Gestão e Negócios · Senac Araçatuba';
-  document.getElementById('parabens-turmas').textContent = cursos ? `${cursos} · Senac Araçatuba` : 'Novos Técnicos · Senac Araçatuba';
-
-  if (dados.paraninfo) {
-    document.getElementById('nome-paraninfo').innerHTML = formatNome(dados.paraninfo);
-    document.getElementById('nome-paraninfo-disc').textContent = dados.paraninfo;
-  }
-  if (dados.homenageado)
-    document.getElementById('nome-homenageado').innerHTML = formatNome(dados.homenageado);
-  if (dados.orador)
-    document.getElementById('nome-orador').textContent = dados.orador;
-  if (dados.juramentista)
-    document.getElementById('nome-juramentista').textContent = dados.juramentista;
-}
-
-function formatNome(nome) {
-  const p = nome.trim().split(' ');
-  const metade = Math.ceil(p.length / 2);
-  return `<span class="primeiro">${p.slice(0,metade).join(' ')}</span><br>${p.slice(metade).join(' ')}`;
-}
-
-// ── SLIDES DINÂMICOS ───────────────────────────────────────
-function gerarSlidesDinamicos() {
-  const refEntrada = document.getElementById('ref-entrada');
-  const refCert    = document.getElementById('ref-cert');
-
-  [...dados.turmas].reverse().forEach(turma => {
-
-    // — ENTRADA —
-    const cursEl = criarSlideCurso(turma, 'entrada');
-    refEntrada.after(cursEl);
-    [...turma.alunos].reverse().forEach((al) => {
-      cursEl.after(criarSlideAlunoEntrada(turma, al));
-    });
-
-    // — CERTIFICADO —
-    const certEl = criarSlideCurso(turma, 'cert');
-    refCert.after(certEl);
-    [...turma.alunos].reverse().forEach((al) => {
-      certEl.after(criarSlideAlunoCert(turma, al));
-    });
-  });
-}
-
-function criarSlideCurso(turma, ctx) {
-  const d = document.createElement('div');
-  d.className = 'slide s-curso';
-  d.innerHTML = `
-    <div class="grid-bg"></div>
-    <div class="rings"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div></div>
-    <div class="scanline"></div>
-    <div class="inner">
-      <div class="kicker fade d1">${ctx==='entrada'?'🎓 Entrada dos Formandos':'📜 Entrega de Certificados'}</div>
-      <div class="linha-laranja fade d2"></div>
-      <div class="t-big fade d3">${turma.nome}</div>
-      <div class="t-sub fade d4">${turma.area} · ${turma.ano}</div>
-    </div>`;
-  return d;
-}
-
-function criarSlideAlunoEntrada(turma, aluno) {
-  const d = document.createElement('div');
-  d.className = 'slide s-aluno-entrada';
-  d.dataset.musicaUrl  = aluno.musicaUrl  || '';
-  d.dataset.musicaNome = aluno.musicaNome || '';
-  d.innerHTML = `
-    <div class="grid-bg"></div>
-    <div class="slide-orb orb1"></div>
-    <div class="slide-orb orb2"></div>
-    <div class="scanline"></div>
-    <div class="inner">
-      <div class="kicker fade d1">${turma.nome}</div>
-      <div class="linha-laranja fade d2"></div>
-      <div class="t-nome fade d3">${formatNome(aluno.nome)}</div>
-      <div class="t-role fade d4">Formando(a) · ${turma.ano}</div>
-    </div>`;
-  return d;
-}
-
-function criarSlideAlunoCert(turma, aluno) {
-  const d = document.createElement('div');
-  d.className = 'slide s-aluno-cert';
-  d.innerHTML = `
-    <div class="grid-bg"></div>
-    <div class="slide-orb orb1"></div>
-    <div class="slide-orb orb2"></div>
-    <div class="scanline"></div>
-    <div class="inner">
-      <div class="kicker fade d1">${turma.nome} · Certificado</div>
-      <div class="linha-laranja fade d2"></div>
-      <div class="t-nome fade d3">${formatNome(aluno.nome)}</div>
-      <div class="t-role fade d4">Técnico(a) em ${turma.nome.replace(/técnico\s+em\s+/i,'').trim()}</div>
-    </div>`;
-  return d;
-}
-
-// ── SEQUÊNCIA ──────────────────────────────────────────────
-function construirSlides() {
-  slides = Array.from(document.querySelectorAll('.deck .slide'));
-  document.getElementById('scTot').textContent = pad(slides.length);
-}
-
-function construirDots() {
-  const c = document.getElementById('dotsContainer');
-  c.innerHTML = '';
-  const max = Math.min(slides.length, 40);
-  for (let i = 0; i < max; i++) {
-    const d = document.createElement('span');
-    d.className = 'dot';
-    d.onclick = () => goTo(i);
-    c.appendChild(d);
-  }
-  dots = Array.from(c.querySelectorAll('.dot'));
-}
-
-// ── NAVEGAÇÃO ──────────────────────────────────────────────
-function goTo(idx) {
-  if (idx < 0 || idx >= slides.length) return;
-  pararAudio();
-
-  slides[current].classList.remove('active');
-  if (dots[current]) dots[current].classList.remove('active');
-
-  current = idx;
-  const slide = slides[current];
-  slide.classList.add('active');
-  if (dots[current]) dots[current].classList.add('active');
-
-  if (slide.dataset && slide.dataset.musicaUrl) {
-    setTimeout(() => tocarMusica(slide.dataset.musicaUrl, slide.dataset.musicaNome), 350);
-  }
-
-  const hino = document.getElementById('hinoVideo');
-  if (slide.id === 'slide-hino') { hino.currentTime=0; hino.play().catch(()=>{}); }
-  else { hino.pause(); hino.currentTime=0; }
-
-  document.getElementById('progress').style.width = (((current+1)/slides.length)*100)+'%';
-  document.getElementById('scCur').textContent = pad(current+1);
-}
-
-function nextSlide(){ goTo(current+1); }
-function prevSlide(){ goTo(current-1); }
-
-// ── ÁUDIO ──────────────────────────────────────────────────
-function tocarMusica(url, nome) {
-  if (!url) return;
-  audio.src = url;
-  audio.volume = .85;
-  audio.play().then(() => {
-    document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
-    document.getElementById('audioInd').classList.add('show');
-  }).catch(()=>{});
-}
-
-function pararAudio() {
-  if (!audio.paused) { audio.pause(); audio.currentTime=0; }
-  document.getElementById('audioInd').classList.remove('show');
-}
-
-audio.addEventListener('ended', () => document.getElementById('audioInd').classList.remove('show'));
-
-// ── CONTROLES ──────────────────────────────────────────────
-function configurarControles() {
-  document.addEventListener('keydown', e => {
-    switch(e.key) {
-      case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown':
-        e.preventDefault(); nextSlide(); break;
-      case 'ArrowLeft': case 'ArrowUp': case 'PageUp':
-        e.preventDefault(); prevSlide(); break;
-      case 'f': case 'F': toggleFS(); break;
-      case 'Escape': pararAudio(); break;
-    }
-  });
-
-  document.getElementById('deck').addEventListener('click', e => {
-    if (e.target.closest('.nav-arrow')) return;
-    nextSlide();
-  });
-}
-
-function toggleFS() {
-  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
-  else document.exitFullscreen();
-}
 </script>
+
 </body>
 </html>
