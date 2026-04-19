@@ -187,6 +187,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 
 .admin-link{position:fixed;bottom:6px;left:10px;z-index:200;font-size:10px;color:rgba(255,255,255,.06);text-decoration:none;font-family:monospace;}
 .admin-link:hover{color:rgba(255,255,255,.35);}
+.back-btn{position:fixed;bottom:6px;left:46px;z-index:200;font-size:10px;color:rgba(255,255,255,.06);text-decoration:none;font-family:monospace;}
+.back-btn:hover{color:rgba(255,255,255,.35);}
 </style>
 </head>
 <body>
@@ -550,6 +552,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 </div>
 
 <a href="admin.html" class="admin-link">admin</a>
+<a href="index.html" class="back-btn">voltar</a>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
@@ -702,8 +705,9 @@ function criarSlideCurso(turma, ctx) {
 function criarSlideAlunoEntrada(turma, aluno) {
   const d = document.createElement('div');
   d.className = 'slide s-aluno-entrada';
-  d.dataset.musicaUrl  = aluno.musicaUrl  || '';
-  d.dataset.musicaNome = aluno.musicaNome || '';
+  d.dataset.musicaUrl   = aluno.musicaUrl   || '';
+  d.dataset.musicaNome  = aluno.musicaNome  || '';
+  d.dataset.musicaInicio = aluno.musicaInicio || 0;
   d.innerHTML = `
     <div class="grid-bg"></div>
     <div class="slide-orb orb1"></div>
@@ -768,7 +772,7 @@ function goTo(idx) {
   if (dots[current]) dots[current].classList.add('active');
 
   if (slide.dataset && slide.dataset.musicaUrl) {
-    setTimeout(() => tocarMusica(slide.dataset.musicaUrl, slide.dataset.musicaNome), 350);
+    setTimeout(() => tocarMusica(slide.dataset.musicaUrl, slide.dataset.musicaNome, parseFloat(slide.dataset.musicaInicio) || 0), 350);
   }
 
   if (slide.id === 'slide-hino') {
@@ -785,14 +789,18 @@ function nextSlide(){ goTo(current+1); }
 function prevSlide(){ goTo(current-1); }
 
 // ── ÁUDIO ──────────────────────────────────────────────────
-function tocarMusica(url, nome) {
+function tocarMusica(url, nome, inicio = 0) {
   if (!url) return;
   audio.src = url;
   audio.volume = .85;
-  audio.play().then(() => {
-    document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
-    document.getElementById('audioInd').classList.add('show');
-  }).catch(()=>{});
+  audio.addEventListener('canplay', function onCanPlay() {
+    audio.removeEventListener('canplay', onCanPlay);
+    audio.currentTime = inicio;
+    audio.play().then(() => {
+      document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
+      document.getElementById('audioInd').classList.add('show');
+    }).catch(()=>{});
+  }, { once: true });
 }
 
 function pararAudio() {

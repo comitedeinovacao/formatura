@@ -505,6 +505,27 @@
   .export-bar p { font-size: 13px; color: rgba(255,255,255,0.8); }
   .export-bar strong { color: #fff; }
 
+  /* BOTÃO VOLTAR */
+  .btn-voltar {
+    color: rgba(255,255,255,.5);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255,255,255,.15);
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: color .2s, border-color .2s;
+  }
+  .btn-voltar:hover { color: #fff; border-color: rgba(255,255,255,.4); }
+
+  .header-brand { display: flex; align-items: center; gap: 16px; }
+  .header-subtitle { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .inicio-group { margin-bottom: 8px; }
+  .inicio-input { width: 120px; }
+  .modal-current-music { font-size: 12px; color: var(--muted); }
+  .btn-modal-salvar { flex: 1; }
+
   /* SCROLLBAR */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -557,9 +578,12 @@
 <body>
 
 <header>
-  <div>
-    <div class="logo-text">Senac <span>Araçatuba</span></div>
-    <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">Sistema de Formaturas — Painel Admin</div>
+  <div class="header-brand">
+    <a href="index.html" class="btn-voltar">← Voltar</a>
+    <div>
+      <div class="logo-text">Senac <span>Araçatuba</span></div>
+      <div class="header-subtitle">Sistema de Formaturas — Painel Admin</div>
+    </div>
   </div>
   <p>Gestão e Negócios · 2026</p>
 </header>
@@ -603,6 +627,10 @@
         </div>
         <div class="form-group">
           <label>Música de Entrada (MP3)</label>
+          <div class="form-group inicio-group">
+            <label>Iniciar em (mm:ss)</label>
+            <input type="text" id="musicaInicio" placeholder="Ex: 1:30" maxlength="5" class="inicio-input">
+          </div>
           <div class="upload-area" id="uploadArea">
             <input type="file" id="musicaFile" accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg" onchange="handleFileSelect(event)">
             <div class="upload-icon">🎵</div>
@@ -657,7 +685,7 @@
       <strong>Pronto para apresentar?</strong>
       <p>Salve o JSON e abra a apresentação. O sistema carrega os dados automaticamente.</p>
     </div>
-    <a href="index.html" target="_blank" class="btn btn-primary" style="width:auto;text-decoration:none;">🖥️ Abrir Apresentação</a>
+    <a href="cerimonia.html" target="_blank" class="btn btn-primary" style="width:auto;text-decoration:none;">🖥️ Abrir Apresentação</a>
   </div>
 
 </div>
@@ -681,10 +709,14 @@
         <span>Enviando...</span>
       </div>
     </div>
-    <div id="modalCurrentMusic" style="font-size:12px;color:var(--muted);"></div>
+    <div id="modalCurrentMusic" class="modal-current-music"></div>
+    <div class="form-group inicio-group">
+      <label>Iniciar em (mm:ss)</label>
+      <input type="text" id="modalMusicaInicio" placeholder="Ex: 1:30" maxlength="5" class="inicio-input">
+    </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarEdicaoMusica()" style="flex:1;">Salvar</button>
+      <button type="button" class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+      <button type="button" class="btn btn-primary btn-modal-salvar" onclick="salvarEdicaoMusica()">Salvar</button>
     </div>
   </div>
 </div>
@@ -809,6 +841,17 @@ function removerTurma(id) {
 // ============================================================
 // ALUNOS
 // ============================================================
+function parseTempo(str) {
+  if (!str) return 0;
+  const parts = str.split(':').map(Number);
+  return parts.length === 2 ? (parts[0] * 60) + (parts[1] || 0) : (parseInt(parts[0]) || 0);
+}
+
+function formatTempo(segundos) {
+  if (!segundos) return '';
+  return Math.floor(segundos / 60) + ':' + String(segundos % 60).padStart(2, '0');
+}
+
 function adicionarAluno() {
   const turmaId = document.getElementById('selectTurmaAluno').value;
   const nome = document.getElementById('nomeAluno').value.trim();
@@ -822,7 +865,8 @@ function adicionarAluno() {
   turma.alunos.push({
     nome,
     musicaUrl: pendingAudioUrl || null,
-    musicaNome: pendingAudioName || null
+    musicaNome: pendingAudioName || null,
+    musicaInicio: parseTempo(document.getElementById('musicaInicio').value)
   });
 
   turmaAtiva = turmaId;
@@ -830,6 +874,7 @@ function adicionarAluno() {
   renderTudo();
 
   document.getElementById('nomeAluno').value = '';
+  document.getElementById('musicaInicio').value = '';
   pendingAudioUrl = null;
   pendingAudioName = null;
   document.getElementById('previewPlayer').classList.remove('show');
@@ -952,6 +997,7 @@ function abrirModal(turmaId, alunoIndex) {
   document.getElementById('modalCurrentMusic').innerHTML = aluno.musicaUrl
     ? `🎵 Atual: <strong>${aluno.musicaNome || 'arquivo salvo'}</strong>`
     : '⚠️ Nenhuma música cadastrada';
+  document.getElementById('modalMusicaInicio').value = formatTempo(aluno.musicaInicio);
   modalPendingUrl = null;
   document.getElementById('modalOverlay').classList.add('open');
 }
@@ -962,12 +1008,12 @@ function fecharModal() {
 }
 
 function salvarEdicaoMusica() {
-  if (!modalPendingUrl) { showToast('Selecione um arquivo MP3 primeiro', 'error'); return; }
   const turmaId = document.getElementById('modalTurmaId').value;
   const idx = parseInt(document.getElementById('modalAlunoIndex').value);
   const turma = dados.turmas.find(t => t.id === turmaId);
   if (!turma) return;
-  turma.alunos[idx].musicaUrl = modalPendingUrl;
+  if (modalPendingUrl) turma.alunos[idx].musicaUrl = modalPendingUrl;
+  turma.alunos[idx].musicaInicio = parseTempo(document.getElementById('modalMusicaInicio').value);
   salvar();
   renderTurmaContent();
   fecharModal();
