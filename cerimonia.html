@@ -192,12 +192,13 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 .back-btn:hover{color:rgba(255,255,255,.35);}
 
 /* Duplo — dois nomes por slide (duas turmas) */
-.t-dual{display:grid;grid-template-columns:1fr 1px 1fr;gap:0 32px;margin-top:12px;align-items:start;}
-.t-dual-sep{background:rgba(255,255,255,.12);align-self:stretch;}
-.t-dual-item{display:flex;flex-direction:column;}
-.t-nome-dual{font-weight:900;font-size:clamp(26px,3.5vw,52px);line-height:1;text-transform:uppercase;letter-spacing:-.5px;color:#fff;}
+.t-dual{display:grid;grid-template-columns:1fr 1px 1fr;gap:0 40px;margin-top:12px;align-items:start;width:100%;}
+.t-dual-sep{background:rgba(255,255,255,.15);align-self:stretch;min-height:120px;}
+.t-dual-item{display:flex;flex-direction:column;min-width:0;}
+.t-nome-dual{font-weight:900;font-size:clamp(40px,5.5vw,82px);line-height:.95;text-transform:uppercase;letter-spacing:-.5px;color:#fff;overflow-wrap:break-word;word-break:break-word;}
 .t-nome-dual .primeiro{color:var(--laranja);text-shadow:0 0 40px rgba(247,148,29,.3);}
-.t-curso-dual{font-size:clamp(10px,.85vw,13px);font-weight:700;color:var(--laranja);letter-spacing:3px;text-transform:uppercase;margin-top:8px;opacity:.8;}
+.t-curso-dual{font-size:clamp(10px,.9vw,14px);font-weight:700;color:var(--laranja);letter-spacing:3px;text-transform:uppercase;margin-top:8px;opacity:.85;}
+.t-role-item{font-size:clamp(11px,1vw,16px);font-weight:600;color:rgba(255,255,255,.4);letter-spacing:3px;text-transform:uppercase;margin-top:8px;}
 </style>
 </head>
 <body>
@@ -341,7 +342,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
     <div class="kicker fade d1">Composição da Mesa Solene</div>
     <div class="linha-laranja fade d2"></div>
     <div id="container-paraninfo" class="fade d3"></div>
-    <div class="t-role fade d4">Docente Paraninfo da Turma</div>
   </div>
 </div>
 
@@ -357,7 +357,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
     <div class="kicker fade d1">Composição da Mesa Solene</div>
     <div class="linha-laranja fade d2"></div>
     <div id="container-homenageado" class="fade d3"></div>
-    <div class="t-role fade d4">Docente Homenageado(a) do Curso</div>
   </div>
 </div>
 
@@ -441,7 +440,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
     <div class="kicker fade d1">Discurso</div>
     <div class="linha-laranja fade d2"></div>
     <div id="container-orador" class="fade d3"></div>
-    <div class="t-role fade d4">Orador(a) da Turma</div>
   </div>
 </div>
 
@@ -457,7 +455,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
     <div class="kicker fade d1">Discurso do Paraninfo</div>
     <div class="linha-laranja fade d2"></div>
     <div id="container-paraninfo-disc" class="fade d3"></div>
-    <div class="t-role fade d4">Discurso do Docente Paraninfo</div>
   </div>
 </div>
 
@@ -472,7 +469,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
     <div class="kicker fade d1">Rito solene</div>
     <div class="linha-laranja fade d2"></div>
     <div id="container-juramentista" class="fade d3"></div>
-    <div class="t-role fade d4">Juramento da Turma</div>
   </div>
 </div>
 
@@ -722,15 +718,21 @@ async function carregarDados() {
   preencherDadosCerimonia();
 }
 
-function renderNomesDual(turmas, campo) {
+function renderNomesDual(turmas, campo, role) {
   const itens = turmas.filter(t => t[campo]);
   if (!itens.length) return null;
+  const roleHtml = role ? `<div class="t-role-item">${role}</div>` : '';
   if (itens.length === 1) {
-    return `<div class="t-nome">${formatNome(itens[0][campo])}</div><div class="t-curso-dual">${itens[0].nome}</div>`;
+    return `<div class="t-nome">${formatNome(itens[0][campo])}</div>` +
+           `<div class="t-curso-dual">${itens[0].nome}</div>` + roleHtml;
   }
   const cols = itens.map((t, i) =>
     (i > 0 ? '<div class="t-dual-sep"></div>' : '') +
-    `<div class="t-dual-item"><div class="t-nome-dual">${formatNome(t[campo])}</div><div class="t-curso-dual">${t.nome}</div></div>`
+    `<div class="t-dual-item">` +
+      `<div class="t-nome-dual">${formatNome(t[campo])}</div>` +
+      `<div class="t-curso-dual">${t.nome}</div>` +
+      roleHtml +
+    `</div>`
   ).join('');
   return `<div class="t-dual">${cols}</div>`;
 }
@@ -739,17 +741,17 @@ function preencherDadosCerimonia() {
   const turmas = dados.turmas || [];
 
   const blocos = [
-    { id: 'container-paraninfo',      campo: 'paraninfo' },
-    { id: 'container-paraninfo-disc', campo: 'paraninfo' },
-    { id: 'container-homenageado',    campo: 'homenageado' },
-    { id: 'container-orador',         campo: 'orador' },
-    { id: 'container-juramentista',   campo: 'juramentista' },
+    { id: 'container-paraninfo',      campo: 'paraninfo',    role: 'Docente Paraninfo da Turma' },
+    { id: 'container-paraninfo-disc', campo: 'paraninfo',    role: 'Discurso do Docente Paraninfo' },
+    { id: 'container-homenageado',    campo: 'homenageado',  role: 'Docente Homenageado(a)' },
+    { id: 'container-orador',         campo: 'orador',       role: 'Orador(a) da Turma' },
+    { id: 'container-juramentista',   campo: 'juramentista', role: 'Juramentista da Turma' },
   ];
 
-  blocos.forEach(({ id, campo }) => {
+  blocos.forEach(({ id, campo, role }) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const html = renderNomesDual(turmas, campo);
+    const html = renderNomesDual(turmas, campo, role);
     if (html) el.innerHTML = html;
   });
 }
