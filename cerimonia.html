@@ -152,10 +152,11 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 /* =============================================
    HINO NACIONAL
    ============================================= */
-.s-hino{background:#000;padding:0;}
+.s-hino{background:linear-gradient(135deg,var(--azul-escuro) 0%,var(--azul) 60%,var(--azul-escuro) 100%);padding:0;}
 .s-hino iframe{position:absolute;inset:0;width:100%;height:100%;z-index:1;border:none;}
-.s-hino .hino-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,45,92,.4) 0%,rgba(0,0,0,.65) 100%);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;}
-.s-hino .hino-flag{font-size:96px;}
+.s-hino .hino-overlay{position:absolute;inset:0;background:linear-gradient(135deg,var(--azul-escuro) 0%,var(--azul) 60%,var(--azul-escuro) 100%);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transition:opacity .8s ease;}
+.s-hino .hino-overlay.oculto{opacity:0;pointer-events:none;}
+.s-hino .hino-bandeira{font-size:14px;font-weight:700;letter-spacing:4px;color:var(--laranja);text-transform:uppercase;}
 .s-hino .t-big{text-align:center;font-size:clamp(40px,5.5vw,80px);}
 
 /* =============================================
@@ -408,9 +409,15 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
     allow="autoplay; fullscreen"
     allowfullscreen>
   </iframe>
-  <div class="hino-overlay">
-    <div class="hino-flag fade d1">🇧🇷</div>
-    <div class="t-big fade d2" style="text-align:center;">Hino Nacional<br><span class="lar">Brasileiro</span></div>
+  <div class="hino-overlay" id="hinoOverlay">
+    <div class="grid-bg"></div>
+    <div class="slide-orb orb1"></div>
+    <div class="slide-orb orb2"></div>
+    <div class="scanline"></div>
+    <div class="kicker fade d1">Cerimônia de Colação de Grau</div>
+    <div class="linha-laranja fade d2" style="margin:0 auto;"></div>
+    <div class="t-big fade d3">Hino Nacional<br><span class="lar">Brasileiro</span></div>
+    <div class="hino-bandeira fade d4">Brasil · República Federativa</div>
   </div>
 </div>
 
@@ -563,6 +570,12 @@ function onYouTubeIframeAPIReady() {
     events: {
       onReady: function() {},
       onStateChange: function(e) {
+        const overlay = document.getElementById('hinoOverlay');
+        if (e.data === YT.PlayerState.PLAYING) {
+          overlay.classList.add('oculto');
+        } else {
+          overlay.classList.remove('oculto');
+        }
         if (e.data === YT.PlayerState.ENDED) {
           hinoPlayer.seekTo(0);
           hinoPlayer.stopVideo();
