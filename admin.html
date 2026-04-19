@@ -684,24 +684,6 @@
         <button class="btn btn-primary" onclick="adicionarAluno()">+ Adicionar Aluno</button>
       </div>
 
-      <!-- CERIMÔNIA -->
-      <div class="card" style="margin-top:16px;">
-        <div class="card-title">🎖️ Dados da Cerimônia</div>
-        <div class="form-group">
-          <label>Paraninfo(a)</label>
-          <input type="text" id="inputParaninfo" placeholder="Nome completo do(a) Paraninfo(a)">
-        </div>
-        <div class="form-group">
-          <label>Docente Homenageado(a)</label>
-          <input type="text" id="inputHomenageado" placeholder="Nome completo do(a) Docente">
-        </div>
-        <div class="form-group">
-          <label>Juramentista</label>
-          <input type="text" id="inputJuramentista" placeholder="Nome do(a) aluno(a) juramentista">
-        </div>
-        <button class="btn btn-primary" onclick="salvarCerimonia()">💾 Salvar Cerimônia</button>
-      </div>
-
     </div>
 
     <!-- COLUNA DIREITA: Lista de turmas e alunos -->
@@ -788,7 +770,7 @@ const UPLOAD_PRESET = 'senac-formatura';
 // ============================================================
 // STATE
 // ============================================================
-let dados = { turmas: [], paraninfo: '', homenageado: '', juramentista: '', orador: '' };
+let dados = { turmas: [] };
 let turmaAtiva = null;
 let pendingAudioUrl = null;
 let pendingAudioName = null;
@@ -900,6 +882,10 @@ function adicionarTurma() {
     nome,
     area: area || 'Gestão e Negócios',
     ano: ano || '2025',
+    paraninfo: '',
+    homenageado: '',
+    juramentista: '',
+    orador: '',
     alunos: []
   };
 
@@ -1141,27 +1127,24 @@ function renderTudo() {
   renderTabs();
   renderTurmaContent();
   atualizarSelectTurma();
-  popularCerimonia();
 }
 
 // ============================================================
-// CERIMÔNIA
+// CERIMÔNIA POR TURMA
 // ============================================================
-function popularCerimonia() {
-  document.getElementById('inputParaninfo').value = dados.paraninfo || '';
-  document.getElementById('inputHomenageado').value = dados.homenageado || '';
-  document.getElementById('inputJuramentista').value = dados.juramentista || '';
-}
-
-function salvarCerimonia() {
-  dados.paraninfo = document.getElementById('inputParaninfo').value.trim();
-  dados.homenageado = document.getElementById('inputHomenageado').value.trim();
-  dados.juramentista = document.getElementById('inputJuramentista').value.trim();
+function salvarDadosTurma(turmaId) {
+  const turma = dados.turmas.find(t => t.id === turmaId);
+  if (!turma) return;
+  turma.paraninfo   = document.getElementById(`inp-paraninfo-${turmaId}`).value.trim();
+  turma.homenageado = document.getElementById(`inp-homenageado-${turmaId}`).value.trim();
+  turma.juramentista = document.getElementById(`inp-juramentista-${turmaId}`).value.trim();
   salvar();
 }
 
-function definirOrador(nome) {
-  dados.orador = (dados.orador === nome) ? '' : nome;
+function definirOrador(turmaId, nome) {
+  const turma = dados.turmas.find(t => t.id === turmaId);
+  if (!turma) return;
+  turma.orador = (turma.orador === nome) ? '' : nome;
   salvar();
   renderTurmaContent();
 }
@@ -1249,9 +1232,9 @@ function renderTurmaContent() {
               }
             </div>
             <div style="display:flex;gap:6px;align-items:center;">
-              ${dados.orador === a.nome ? `<span class="badge-orador">Orador(a)</span>` : ''}
-              <button class="btn-orador ${dados.orador === a.nome ? 'ativo' : ''}"
-                onclick="definirOrador('${a.nome.replace(/'/g, "\\'")}')">🎤</button>
+              ${turma.orador === a.nome ? `<span class="badge-orador">Orador(a)</span>` : ''}
+              <button class="btn-orador ${turma.orador === a.nome ? 'ativo' : ''}"
+                onclick="definirOrador('${turma.id}', '${a.nome.replace(/'/g, "\\'")}')">🎤</button>
               <button class="btn btn-sm" style="background:var(--dark3);border:1px solid var(--border);color:var(--text);"
                 onclick="abrirModal('${turma.id}', ${i})">✏️</button>
               <button class="btn btn-sm btn-danger"
@@ -1261,6 +1244,28 @@ function renderTurmaContent() {
         `).join('')}
       </div>
     `}
+
+  <hr class="divider">
+  <div class="card-title" style="margin-bottom:16px;">🎖️ Dados da Cerimônia</div>
+  <div class="form-group">
+    <label>Paraninfo(a)</label>
+    <input type="text" id="inp-paraninfo-${turma.id}"
+      placeholder="Nome completo do(a) Paraninfo(a)"
+      value="${(turma.paraninfo || '').replace(/"/g, '&quot;')}">
+  </div>
+  <div class="form-group">
+    <label>Docente Homenageado(a)</label>
+    <input type="text" id="inp-homenageado-${turma.id}"
+      placeholder="Nome completo do(a) Docente"
+      value="${(turma.homenageado || '').replace(/"/g, '&quot;')}">
+  </div>
+  <div class="form-group">
+    <label>Juramentista</label>
+    <input type="text" id="inp-juramentista-${turma.id}"
+      placeholder="Nome do(a) aluno(a) juramentista"
+      value="${(turma.juramentista || '').replace(/"/g, '&quot;')}">
+  </div>
+  <button type="button" class="btn btn-primary" onclick="salvarDadosTurma('${turma.id}')">💾 Salvar Dados da Cerimônia</button>
   `;
 }
 

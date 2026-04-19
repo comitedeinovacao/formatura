@@ -190,6 +190,14 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 .admin-link:hover{color:rgba(255,255,255,.35);}
 .back-btn{position:fixed;bottom:6px;left:46px;z-index:200;font-size:10px;color:rgba(255,255,255,.06);text-decoration:none;font-family:monospace;}
 .back-btn:hover{color:rgba(255,255,255,.35);}
+
+/* Duplo — dois nomes por slide (duas turmas) */
+.t-dual{display:grid;grid-template-columns:1fr 1px 1fr;gap:0 32px;margin-top:12px;align-items:start;}
+.t-dual-sep{background:rgba(255,255,255,.12);align-self:stretch;}
+.t-dual-item{display:flex;flex-direction:column;}
+.t-nome-dual{font-weight:900;font-size:clamp(26px,3.5vw,52px);line-height:1;text-transform:uppercase;letter-spacing:-.5px;color:#fff;}
+.t-nome-dual .primeiro{color:var(--laranja);text-shadow:0 0 40px rgba(247,148,29,.3);}
+.t-curso-dual{font-size:clamp(10px,.85vw,13px);font-weight:700;color:var(--laranja);letter-spacing:3px;text-transform:uppercase;margin-top:8px;opacity:.8;}
 </style>
 </head>
 <body>
@@ -332,7 +340,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Composição da Mesa Solene</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-paraninfo"><span class="primeiro">Docente</span><br>Paraninfo</div>
+    <div id="container-paraninfo" class="fade d3"></div>
     <div class="t-role fade d4">Docente Paraninfo da Turma</div>
   </div>
 </div>
@@ -348,8 +356,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Composição da Mesa Solene</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-homenageado"><span class="primeiro">Docente</span><br>Homenageado</div>
-    <div class="t-role fade d4">Docente do Curso</div>
+    <div id="container-homenageado" class="fade d3"></div>
+    <div class="t-role fade d4">Docente Homenageado(a) do Curso</div>
   </div>
 </div>
 
@@ -432,8 +440,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Discurso</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-orador">Orador(a) da Turma</div>
-    <div class="t-role fade d4">Discurso da Turma</div>
+    <div id="container-orador" class="fade d3"></div>
+    <div class="t-role fade d4">Orador(a) da Turma</div>
   </div>
 </div>
 
@@ -446,10 +454,10 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="bg-diagonal"></div>
   <img class="bg-img" src="aracatuba_laboratorio-interpretacao3.jpg" alt="">
   <div class="inner">
-    <div class="kicker fade d1">Paraninfo</div>
+    <div class="kicker fade d1">Discurso do Paraninfo</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-paraninfo-disc">Docente Paraninfo</div>
-    <div class="t-role fade d4">Discurso do Docente</div>
+    <div id="container-paraninfo-disc" class="fade d3"></div>
+    <div class="t-role fade d4">Discurso do Docente Paraninfo</div>
   </div>
 </div>
 
@@ -463,7 +471,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Rito solene</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3" id="nome-juramentista">Juramentista</div>
+    <div id="container-juramentista" class="fade d3"></div>
     <div class="t-role fade d4">Juramento da Turma</div>
   </div>
 </div>
@@ -695,16 +703,44 @@ async function carregarDados() {
   document.getElementById('bemvindo-sub').textContent   = cursos || 'Gestão e Negócios · Senac Araçatuba';
   document.getElementById('parabens-turmas').textContent = cursos ? `${cursos} · Senac Araçatuba` : 'Novos Técnicos · Senac Araçatuba';
 
-  if (dados.paraninfo) {
-    document.getElementById('nome-paraninfo').innerHTML = formatNome(dados.paraninfo);
-    document.getElementById('nome-paraninfo-disc').textContent = dados.paraninfo;
+  preencherDadosCerimonia();
+}
+
+function renderNomesDual(turmas, campo) {
+  const itens = turmas.filter(t => t[campo]);
+  if (!itens.length) return null;
+  if (itens.length === 1) {
+    return `<div class="t-nome">${formatNome(itens[0][campo])}</div>
+            <div class="t-curso-dual">${itens[0].nome}</div>`;
   }
-  if (dados.homenageado)
-    document.getElementById('nome-homenageado').innerHTML = formatNome(dados.homenageado);
-  if (dados.orador)
-    document.getElementById('nome-orador').textContent = dados.orador;
-  if (dados.juramentista)
-    document.getElementById('nome-juramentista').textContent = dados.juramentista;
+  return `<div class="t-dual">
+    ${itens.map((t, i) => `
+      ${i > 0 ? '<div class="t-dual-sep"></div>' : ''}
+      <div class="t-dual-item">
+        <div class="t-nome-dual">${formatNome(t[campo])}</div>
+        <div class="t-curso-dual">${t.nome}</div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+function preencherDadosCerimonia() {
+  const turmas = dados.turmas || [];
+
+  const blocos = [
+    { id: 'container-paraninfo',      campo: 'paraninfo' },
+    { id: 'container-paraninfo-disc', campo: 'paraninfo' },
+    { id: 'container-homenageado',    campo: 'homenageado' },
+    { id: 'container-orador',         campo: 'orador' },
+    { id: 'container-juramentista',   campo: 'juramentista' },
+  ];
+
+  blocos.forEach(({ id, campo }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const html = renderNomesDual(turmas, campo);
+    if (html) el.innerHTML = html;
+  });
 }
 
 function formatNome(nome) {
