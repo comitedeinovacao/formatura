@@ -99,10 +99,9 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
    PADRÃO: fundo azul-escuro + diagonal laranja
    ============================================= */
 .slide-padrao{background:linear-gradient(135deg,var(--azul-escuro) 0%,var(--azul-mid) 100%);}
-.slide-padrao .bg-diagonal{position:absolute;right:0;top:0;width:44%;height:100%;background:linear-gradient(160deg,var(--laranja) 0%,#e07b10 100%);clip-path:polygon(20% 0%,100% 0%,100% 100%,0% 100%);z-index:0;opacity:.95;}
-.slide.active .slide-padrao .bg-diagonal,.slide-padrao.active .bg-diagonal{animation:diagonalPulse 4s ease infinite;}
-.slide-padrao .bg-img{position:absolute;right:0;top:0;width:44%;height:100%;object-fit:cover;clip-path:polygon(20% 0%,100% 0%,100% 100%,0% 100%);z-index:1;filter:grayscale(10%) brightness(.82);}
-.slide-padrao .inner{display:flex;flex-direction:column;justify-content:center;max-width:56%;}
+.slide-padrao .bg-diagonal{display:none;}
+.slide-padrao .bg-img{display:none;}
+.slide-padrao .inner{display:flex;flex-direction:column;justify-content:center;max-width:80%;}
 
 /* Tipografia */
 .kicker{font-size:clamp(11px,1.1vw,16px);font-weight:700;color:var(--laranja);letter-spacing:4px;text-transform:uppercase;text-shadow:0 0 20px rgba(247,148,29,.4);}
@@ -140,15 +139,15 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
    ALUNO ENTRADA
    ============================================= */
 .s-aluno-entrada{background:linear-gradient(140deg,var(--azul-escuro) 0%,var(--azul-mid) 100%);}
-.s-aluno-entrada .bg-diagonal{position:absolute;right:0;top:0;width:44%;height:100%;background:linear-gradient(160deg,var(--laranja) 0%,#e07b10 100%);clip-path:polygon(20% 0%,100% 0%,100% 100%,0% 100%);z-index:0;}
-.s-aluno-entrada .inner{max-width:56%;display:flex;flex-direction:column;justify-content:center;}
+.s-aluno-entrada .bg-diagonal{display:none;}
+.s-aluno-entrada .inner{max-width:80%;display:flex;flex-direction:column;justify-content:center;}
 
 /* =============================================
    ALUNO CERTIFICADO
    ============================================= */
 .s-aluno-cert{background:linear-gradient(140deg,var(--azul-mid) 0%,var(--azul) 100%);}
-.s-aluno-cert .bg-diagonal{position:absolute;right:0;top:0;width:44%;height:100%;background:var(--azul-escuro);clip-path:polygon(20% 0%,100% 0%,100% 100%,0% 100%);z-index:0;border-left:4px solid var(--laranja);}
-.s-aluno-cert .inner{max-width:56%;display:flex;flex-direction:column;justify-content:center;}
+.s-aluno-cert .bg-diagonal{display:none;}
+.s-aluno-cert .inner{max-width:80%;display:flex;flex-direction:column;justify-content:center;}
 
 /* =============================================
    HINO NACIONAL
@@ -403,7 +402,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 <!-- S13 HINO NACIONAL -->
 <div class="slide s-hino" id="slide-hino">
   <video id="hinoVideo" playsinline>
-    <source src="hino-nacional.mp4" type="video/mp4">
+    <source src="Hino Nacional Brasileiro - Jean.mp4" type="video/mp4">
   </video>
   <div class="hino-overlay">
     <div class="hino-flag fade d1">🇧🇷</div>
@@ -691,8 +690,6 @@ function criarSlideAlunoEntrada(turma, aluno) {
     <div class="slide-orb orb1"></div>
     <div class="slide-orb orb2"></div>
     <div class="scanline"></div>
-    <div class="bg-diagonal"></div>
-    ${aluno.foto ? `<img class="bg-img" src="${aluno.foto}" alt="${aluno.nome}">` : ''}
     <div class="inner">
       <div class="kicker fade d1">${turma.nome}</div>
       <div class="linha-laranja fade d2"></div>
@@ -710,8 +707,6 @@ function criarSlideAlunoCert(turma, aluno) {
     <div class="slide-orb orb1"></div>
     <div class="slide-orb orb2"></div>
     <div class="scanline"></div>
-    <div class="bg-diagonal"></div>
-    ${aluno.foto ? `<img class="bg-img" src="${aluno.foto}" alt="${aluno.nome}">` : ''}
     <div class="inner">
       <div class="kicker fade d1">${turma.nome} · Certificado</div>
       <div class="linha-laranja fade d2"></div>
