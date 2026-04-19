@@ -526,6 +526,21 @@
   .modal-current-music { font-size: 12px; color: var(--muted); }
   .btn-modal-salvar { flex: 1; }
 
+  .token-bar {
+    background: rgba(247,148,29,.07);
+    border: 1px solid rgba(247,148,29,.2);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .token-bar label { font-size: 12px; font-weight: 700; color: var(--senac-orange); white-space: nowrap; }
+  .token-bar input { flex: 1; min-width: 200px; font-family: monospace; font-size: 12px; }
+  .token-status { font-size: 11px; color: var(--muted); }
+
   /* SCROLLBAR */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -678,11 +693,18 @@
     </div>
   </div>
 
+  <!-- TOKEN GITHUB -->
+  <div class="token-bar">
+    <label>🔑 GitHub Token</label>
+    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="salvarToken()">
+    <span class="token-status" id="tokenStatus">Necessário para sincronizar entre dispositivos</span>
+  </div>
+
   <!-- EXPORT BAR -->
   <div class="export-bar">
     <div>
       <strong>Pronto para apresentar?</strong>
-      <p>Os dados são salvos automaticamente na nuvem e no dispositivo. Basta abrir a apresentação.</p>
+      <p>Dados salvos automaticamente. Qualquer computador acessa a cerimônia atualizada.</p>
     </div>
     <a href="cerimonia.html" target="_blank" class="btn btn-primary" style="width:auto;text-decoration:none;">🖥️ Abrir Apresentação</a>
   </div>
@@ -749,6 +771,13 @@ let dragSrcIndex = null;
 const API_URL = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57TkiXMXUeyiPDFnMyvEPpwU63FVXYG_D5_mHtg6yPL9ppsYK/exec';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Restaura token salvo
+  const savedToken = localStorage.getItem('gh-token');
+  if (savedToken) {
+    document.getElementById('githubToken').value = savedToken;
+    document.getElementById('tokenStatus').textContent = '✅ Token salvo neste dispositivo';
+  }
+
   try {
     const res = await fetch(API_URL);
     if(res.ok) {
@@ -777,26 +806,50 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ============================================================
+// GITHUB STORAGE
+// ============================================================
+const GH_REPO  = 'comitedeinovacao/formatura';
+const GH_FILE  = 'dados.json';
+const GH_API   = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
+
+function salvarToken() {
+  const token = document.getElementById('githubToken').value.trim();
+  localStorage.setItem('gh-token', token);
+  document.getElementById('tokenStatus').textContent = token ? '✅ Token salvo neste dispositivo' : 'Necessário para sincronizar entre dispositivos';
+}
+
+async function salvarGitHub(token) {
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
+  const headers = { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' };
+
+  let sha = null;
+  try {
+    const r = await fetch(GH_API, { headers });
+    if (r.ok) sha = (await r.json()).sha;
+  } catch(e) {}
+
+  const res = await fetch(GH_API, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify({ message: 'Atualiza dados da cerimônia', content, ...(sha && { sha }) })
+  });
+  return res.ok;
+}
+
+// ============================================================
 // SAVE
 // ============================================================
 async function salvar() {
   localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
-  
-  // Sincronizar na nuvem
-  try {
-    const origText = document.getElementById('toastMsg') ? document.getElementById('toastMsg').textContent : '';
-    showToast('Salvando na nuvem...', 'info');
-    
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify(dados)
-    });
-    
-    const json = await res.json();
-    if(json.success) showToast('Salvo com sucesso!');
-    else showToast('Erro na nuvem', 'error');
-  } catch(e) {
-    showToast('Sem conexão (salvo offline)', 'error');
+
+  const token = localStorage.getItem('gh-token');
+  if (token) {
+    showToast('Salvando...', 'info');
+    const ok = await salvarGitHub(token);
+    if (ok) { showToast('Salvo — disponível em todos os dispositivos ✅'); return; }
+    showToast('Erro no GitHub (token inválido?)', 'error');
+  } else {
+    showToast('Salvo localmente (configure o token para sincronizar)', 'error');
   }
 }
 

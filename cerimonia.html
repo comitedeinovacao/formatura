@@ -636,36 +636,35 @@ function iniciarParticulasParabens() {
 }
 
 // ── DADOS ──────────────────────────────────────────────────
-const API_URL = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57TkiXMXUeyiPDFnMyvEPpwU63FVXYG_D5_mHtg6yPL9ppsYK/exec';
+const API_URL  = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57TkiXMXUeyiPDFnMyvEPpwU63FVXYG_D5_mHtg6yPL9ppsYK/exec';
+const GH_RAW   = 'https://raw.githubusercontent.com/comitedeinovacao/formatura/main/dados.json';
 
 async function carregarDados() {
-  // Carrega localStorage primeiro (preserva musicaInicio e outros campos locais)
-  let localDados = null;
+  // 1. GitHub (fonte principal — cross-device, dados completos)
   try {
-    const s = localStorage.getItem('formatura-senac-dados');
-    if (s) { localDados = JSON.parse(s); dados = localDados; }
-  } catch(er) {}
+    const res = await fetch(GH_RAW + '?t=' + Date.now());
+    if (res.ok) {
+      dados = await res.json();
+      localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+      return;
+    }
+  } catch(e) {}
 
-  // Busca API e mescla preservando campos que a API pode não retornar
+  // 2. Google Sheets API (fallback — não preserva musicaInicio)
   try {
     const res = await fetch(API_URL);
-    if(res.ok) {
-      const apiDados = await res.json();
-      if (localDados?.turmas) {
-        apiDados.turmas?.forEach(turma => {
-          const lt = localDados.turmas.find(t => t.id === turma.id);
-          turma.alunos?.forEach(aluno => {
-            const la = lt?.alunos?.find(a => a.nome === aluno.nome);
-            if (la?.musicaInicio) aluno.musicaInicio = la.musicaInicio;
-          });
-        });
-      }
-      dados = apiDados;
+    if (res.ok) {
+      dados = await res.json();
       localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+      return;
     }
-  } catch(e) {
-    console.error('Usando dados locais');
-  }
+  } catch(e) {}
+
+  // 3. localStorage (último recurso — mesmo dispositivo)
+  try {
+    const s = localStorage.getItem('formatura-senac-dados');
+    if (s) dados = JSON.parse(s);
+  } catch(e) {}
 
   const cursos = dados.turmas.map(t => t.nome).join(' · ');
   document.getElementById('capa-cursos').textContent    = cursos || 'Área de Gestão e Negócios';
