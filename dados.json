@@ -44,6 +44,12 @@
           "musicaInicio": 0
         },
         {
+          "nome": "Erick Felipe Santos de Oliveira",
+          "musicaUrl": null,
+          "musicaNome": null,
+          "musicaInicio": 0
+        },
+        {
           "nome": "Gabriel de Oliveira Marcelino",
           "musicaUrl": "https://res.cloudinary.com/darxzoerw/video/upload/v1776603584/formatura/tainligojmms8ufy46fu.mp3",
           "musicaNome": "Gabriel - Lets groove (Remix)"
@@ -77,12 +83,6 @@
           "nome": "Vanessa Alcântara da Silva Sechim",
           "musicaUrl": "https://res.cloudinary.com/darxzoerw/video/upload/v1776604025/formatura/upp3uoutjzquo7z34xbc.mp3",
           "musicaNome": "Vanessa - A Bênção"
-        },
-        {
-          "nome": "Erick Felipe Santos de Oliveira",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
         },
         {
           "nome": "Leonardo Frascino Prieto",
