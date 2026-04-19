@@ -639,18 +639,32 @@ function iniciarParticulasParabens() {
 const API_URL = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57TkiXMXUeyiPDFnMyvEPpwU63FVXYG_D5_mHtg6yPL9ppsYK/exec';
 
 async function carregarDados() {
+  // Carrega localStorage primeiro (preserva musicaInicio e outros campos locais)
+  let localDados = null;
+  try {
+    const s = localStorage.getItem('formatura-senac-dados');
+    if (s) { localDados = JSON.parse(s); dados = localDados; }
+  } catch(er) {}
+
+  // Busca API e mescla preservando campos que a API pode não retornar
   try {
     const res = await fetch(API_URL);
     if(res.ok) {
-      dados = await res.json();
+      const apiDados = await res.json();
+      if (localDados?.turmas) {
+        apiDados.turmas?.forEach(turma => {
+          const lt = localDados.turmas.find(t => t.id === turma.id);
+          turma.alunos?.forEach(aluno => {
+            const la = lt?.alunos?.find(a => a.nome === aluno.nome);
+            if (la?.musicaInicio) aluno.musicaInicio = la.musicaInicio;
+          });
+        });
+      }
+      dados = apiDados;
       localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
     }
   } catch(e) {
-    console.error('Buscando offline...', e);
-    try {
-      const s = localStorage.getItem('formatura-senac-dados');
-      if (s) dados = JSON.parse(s);
-    } catch(err){}
+    console.error('Usando dados locais');
   }
 
   const cursos = dados.turmas.map(t => t.nome).join(' · ');
@@ -804,13 +818,24 @@ function prevSlide(){ goTo(current-1); }
 // ── ÁUDIO ──────────────────────────────────────────────────
 function tocarMusica(url, nome, inicio = 0) {
   if (!url) return;
-  audio.src = url;
   audio.volume = .85;
-  audio.play().then(() => {
-    if (inicio > 0) audio.currentTime = inicio;
-    document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
-    document.getElementById('audioInd').classList.add('show');
-  }).catch(()=>{});
+  audio.src = url;
+
+  if (inicio > 0) {
+    audio.addEventListener('loadedmetadata', function() {
+      audio.currentTime = inicio;
+      audio.play().then(() => {
+        document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
+        document.getElementById('audioInd').classList.add('show');
+      }).catch(() => {});
+    }, { once: true });
+    audio.load();
+  } else {
+    audio.play().then(() => {
+      document.getElementById('audioIndText').textContent = nome || 'Música de entrada';
+      document.getElementById('audioInd').classList.add('show');
+    }).catch(() => {});
+  }
 }
 
 function pararAudio() {

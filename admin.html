@@ -663,7 +663,6 @@
     <div class="card">
       <div class="section-header">
         <div class="card-title" style="margin-bottom:0;">📋 Turmas Cadastradas</div>
-        <button class="btn btn-sm btn-success" onclick="exportarDados()" style="font-size:11px;padding:6px 14px;">💾 Salvar JSON</button>
       </div>
 
       <div class="turma-tabs" id="turmaTabs"></div>
@@ -683,7 +682,7 @@
   <div class="export-bar">
     <div>
       <strong>Pronto para apresentar?</strong>
-      <p>Salve o JSON e abra a apresentação. O sistema carrega os dados automaticamente.</p>
+      <p>Os dados são salvos automaticamente na nuvem e no dispositivo. Basta abrir a apresentação.</p>
     </div>
     <a href="cerimonia.html" target="_blank" class="btn btn-primary" style="width:auto;text-decoration:none;">🖥️ Abrir Apresentação</a>
   </div>
@@ -1164,17 +1163,6 @@ function atualizarSelectTurma() {
 // ============================================================
 // EXPORT
 // ============================================================
-function exportarDados() {
-  const json = JSON.stringify(dados, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'formatura-dados.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Arquivo JSON salvo!');
-}
 
 // ============================================================
 // TOAST
