@@ -77,7 +77,14 @@
       "homenageado": "",
       "juramentista": "",
       "orador": "",
-      "alunos": []
+      "alunos": [
+        {
+          "nome": "ALINE SIQUEIRA GAIA GONCALVES",
+          "musicaUrl": null,
+          "musicaNome": null,
+          "musicaInicio": 0
+        }
+      ]
     }
   ]
 }
