@@ -655,7 +655,9 @@ async function carregarDados() {
     if (s) local = JSON.parse(s);
   } catch(e) {}
 
-  // Função auxiliar: mescla musicaInicio do local no objeto remoto
+  const CAMPOS_CERIMONIA = ['paraninfo','homenageado','juramentista','orador'];
+
+  // Mescla musicaInicio do local no objeto remoto
   function mesclarInicio(remoto, origem) {
     if (!origem?.turmas?.length) return;
     remoto.turmas?.forEach(turma => {
@@ -667,13 +669,27 @@ async function carregarDados() {
     });
   }
 
+  // Mescla campos de cerimônia do local quando o remoto está vazio
+  // (resolve cache do CDN do GitHub: admin salva no local antes de propagar)
+  function mesclarCerimonia(remoto, origem) {
+    if (!origem?.turmas?.length) return;
+    remoto.turmas?.forEach(turma => {
+      const lt = origem.turmas.find(t => t.id === turma.id);
+      if (!lt) return;
+      CAMPOS_CERIMONIA.forEach(campo => {
+        if (!turma[campo] && lt[campo]) turma[campo] = lt[campo];
+      });
+    });
+  }
+
   // 1. GitHub — dados completos, cross-device
   try {
     const res = await fetch(GH_RAW + '?t=' + Date.now());
     if (res.ok) {
       const gh = await res.json();
       if (gh?.turmas?.length > 0) {
-        mesclarInicio(gh, local); // preserva musicaInicio do admin local
+        mesclarInicio(gh, local);
+        mesclarCerimonia(gh, local); // complementa campos ainda não propagados pelo CDN
         dados = gh;
         localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
       }
@@ -710,18 +726,13 @@ function renderNomesDual(turmas, campo) {
   const itens = turmas.filter(t => t[campo]);
   if (!itens.length) return null;
   if (itens.length === 1) {
-    return `<div class="t-nome">${formatNome(itens[0][campo])}</div>
-            <div class="t-curso-dual">${itens[0].nome}</div>`;
+    return `<div class="t-nome">${formatNome(itens[0][campo])}</div><div class="t-curso-dual">${itens[0].nome}</div>`;
   }
-  return `<div class="t-dual">
-    ${itens.map((t, i) => `
-      ${i > 0 ? '<div class="t-dual-sep"></div>' : ''}
-      <div class="t-dual-item">
-        <div class="t-nome-dual">${formatNome(t[campo])}</div>
-        <div class="t-curso-dual">${t.nome}</div>
-      </div>
-    `).join('')}
-  </div>`;
+  const cols = itens.map((t, i) =>
+    (i > 0 ? '<div class="t-dual-sep"></div>' : '') +
+    `<div class="t-dual-item"><div class="t-nome-dual">${formatNome(t[campo])}</div><div class="t-curso-dual">${t.nome}</div></div>`
+  ).join('');
+  return `<div class="t-dual">${cols}</div>`;
 }
 
 function preencherDadosCerimonia() {
