@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin — Formatura Senac</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --senac-blue: #004587;
+    --senac-orange: #F7941D;
+    --senac-yellow: #F5C800;
+    --dark: #1a1a1a;
+    --dark2: #222;
+    --dark3: #2d2d2d;
+    --card: #252525;
+    --border: #333;
+    --text: #f0f0f0;
+    --muted: #888;
+    --success: #2ecc71;
+    --danger: #e74c3c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--senac-blue);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 3px solid var(--senac-orange);
+  }
+
+  .logo-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+
+  .logo-text span { color: var(--senac-orange); }
+
+  header p {
+    margin-left: auto;
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .card-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--senac-orange);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* FORM ELEMENTS */
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"], input[type="url"], select {
+    width: 100%;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  input[type="text"]:focus, input[type="url"]:focus, select:focus {
+    border-color: var(--senac-orange);
+  }
+
+  .form-group { margin-bottom: 16px; }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--senac-orange);
+    color: #fff;
+    width: 100%;
+    justify-content: center;
+  }
+  .btn-primary:hover { background: #e07d0a; transform: translateY(-1px); }
+
+  .btn-blue {
+    background: var(--senac-blue);
+    color: #fff;
+    width: 100%;
+    justify-content: center;
+  }
+  .btn-blue:hover { background: #003a72; }
+
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #c0392b; }
+
+  .btn-success { background: var(--success); color: #fff; }
+
+  /* TURMAS LIST */
+  .turma-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .turma-tab {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .turma-tab.active {
+    border-color: var(--senac-orange);
+    background: var(--senac-orange);
+    color: #fff;
+  }
+
+  .turma-tab:hover:not(.active) {
+    border-color: var(--senac-orange);
+    color: var(--senac-orange);
+  }
+
+  /* ALUNOS TABLE */
+  .alunos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 480px;
+    overflow-y: auto;
+  }
+
+  .aluno-item {
+    display: grid;
+    grid-template-columns: 32px 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: border-color 0.2s;
+  }
+
+  .aluno-item:hover { border-color: #444; }
+
+  .aluno-num {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--senac-orange);
+    text-align: center;
+  }
+
+  .aluno-nome {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .aluno-musica {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+
+  .music-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .music-badge.has-music {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--success);
+    border: 1px solid rgba(46,204,113,0.3);
+  }
+
+  .music-badge.no-music {
+    background: rgba(136,136,136,0.1);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* UPLOAD AREA */
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .upload-area:hover, .upload-area.drag-over {
+    border-color: var(--senac-orange);
+    background: rgba(247,148,29,0.05);
+  }
+
+  .upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-icon { font-size: 24px; margin-bottom: 6px; }
+  .upload-text { font-size: 12px; color: var(--muted); }
+  .upload-text strong { color: var(--senac-orange); }
+
+  /* PROGRESS */
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--senac-orange);
+    border-radius: 2px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 9999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 320px;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast.success { border-color: var(--success); }
+  .toast.error { border-color: var(--danger); }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .count-badge {
+    background: var(--senac-blue);
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+
+  /* MODAL de edição de música */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 480px;
+    max-width: 90vw;
+  }
+
+  .modal-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: var(--senac-orange);
+  }
+
+  .modal-aluno-nome {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    flex: 1;
+    justify-content: center;
+  }
+  .btn-ghost:hover { border-color: #555; color: var(--text); }
+
+  /* DRAG HANDLES */
+  .drag-handle {
+    cursor: grab;
+    color: var(--muted);
+    font-size: 16px;
+    user-select: none;
+  }
+
+  .drag-handle:active { cursor: grabbing; }
+
+  .aluno-item.dragging {
+    opacity: 0.4;
+    border-color: var(--senac-orange);
+  }
+
+  /* PREVIEW PLAYER */
+  .preview-player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--dark3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    display: none;
+  }
+
+  .preview-player.show { display: flex; }
+
+  .play-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--senac-orange);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .preview-info { flex: 1; min-width: 0; }
+  .preview-filename { font-size: 12px; color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .preview-status { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ORDEM info */
+  .ordem-info {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+
+  /* EXPORT BTN */
+  .export-bar {
+    background: var(--senac-blue);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+  }
+
+  .export-bar p { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .export-bar strong { color: #fff; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* TURMA HEADER ACTIONS */
+  .turma-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .no-turma {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .no-turma h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .uploading-indicator {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--senac-orange);
+    margin-top: 8px;
+  }
+
+  .uploading-indicator.show { display: flex; }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--senac-orange);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo-text">Senac <span>Araçatuba</span></div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">Sistema de Formaturas — Painel Admin</div>
+  </div>
+  <p>Gestão e Negócios · 2026</p>
+</header>
+
+<div class="container">
+  <div class="grid">
+
+    <!-- COLUNA ESQUERDA: Cadastro -->
+    <div>
+
+      <!-- NOVA TURMA -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">🎓 Nova Turma</div>
+        <div class="form-group">
+          <label>Nome do Curso</label>
+          <input type="text" id="nomeCurso" placeholder="Ex: Técnico em Marketing">
+        </div>
+        <div class="form-group">
+          <label>Área</label>
+          <input type="text" id="areaCurso" placeholder="Ex: Gestão e Negócios" value="Gestão e Negócios">
+        </div>
+        <div class="form-group">
+          <label>Ano / Turma</label>
+          <input type="text" id="anoTurma" placeholder="Ex: 2025">
+        </div>
+        <button class="btn btn-primary" onclick="adicionarTurma()">+ Adicionar Turma</button>
+      </div>
+
+      <!-- NOVO ALUNO -->
+      <div class="card">
+        <div class="card-title">👤 Novo Aluno</div>
+        <div class="form-group">
+          <label>Turma</label>
+          <select id="selectTurmaAluno">
+            <option value="">— Selecione a turma —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nome Completo do Aluno</label>
+          <input type="text" id="nomeAluno" placeholder="Ex: Ana Carolina Delmondes">
+        </div>
+        <div class="form-group">
+          <label>Música de Entrada (MP3)</label>
+          <div class="upload-area" id="uploadArea">
+            <input type="file" id="musicaFile" accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg" onchange="handleFileSelect(event)">
+            <div class="upload-icon">🎵</div>
+            <div class="upload-text">
+              <strong>Clique para selecionar</strong> ou arraste o MP3 aqui
+            </div>
+          </div>
+          <div class="uploading-indicator" id="uploadingIndicator">
+            <div class="spinner"></div>
+            <span id="uploadingText">Enviando para Cloudinary...</span>
+          </div>
+          <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="preview-player" id="previewPlayer">
+            <button class="play-btn" onclick="togglePreview()">▶</button>
+            <div class="preview-info">
+              <div class="preview-filename" id="previewFilename">—</div>
+              <div class="preview-status" id="previewStatus">Pronto para salvar</div>
+            </div>
+          </div>
+          <audio id="previewAudio"></audio>
+        </div>
+        <button class="btn btn-primary" onclick="adicionarAluno()">+ Adicionar Aluno</button>
+      </div>
+
+    </div>
+
+    <!-- COLUNA DIREITA: Lista de turmas e alunos -->
+    <div class="card">
+      <div class="section-header">
+        <div class="card-title" style="margin-bottom:0;">📋 Turmas Cadastradas</div>
+        <button class="btn btn-sm btn-success" onclick="exportarDados()" style="font-size:11px;padding:6px 14px;">💾 Salvar JSON</button>
+      </div>
+
+      <div class="turma-tabs" id="turmaTabs"></div>
+
+      <div id="turmaContent">
+        <div class="no-turma">
+          <div style="font-size:48px;margin-bottom:12px;">🎓</div>
+          <h3>Nenhuma turma cadastrada</h3>
+          <p style="font-size:13px;margin-top:6px;">Adicione a primeira turma ao lado</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- EXPORT BAR -->
+  <div class="export-bar">
+    <div>
+      <strong>Pronto para apresentar?</strong>
+      <p>Salve o JSON e abra a apresentação. O sistema carrega os dados automaticamente.</p>
+    </div>
+    <a href="index.html" target="_blank" class="btn btn-primary" style="width:auto;text-decoration:none;">🖥️ Abrir Apresentação</a>
+  </div>
+
+</div>
+
+<!-- MODAL EDITAR MÚSICA -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title">🎵 Editar Música de Entrada</div>
+    <div class="modal-aluno-nome" id="modalAlunoNome">—</div>
+    <input type="hidden" id="modalTurmaId">
+    <input type="hidden" id="modalAlunoIndex">
+    <div class="form-group">
+      <label>Novo arquivo MP3</label>
+      <div class="upload-area">
+        <input type="file" id="modalMusicaFile" accept="audio/mp3,audio/mpeg" onchange="handleModalFileSelect(event)">
+        <div class="upload-icon">🎵</div>
+        <div class="upload-text"><strong>Clique para selecionar</strong> novo MP3</div>
+      </div>
+      <div class="uploading-indicator" id="modalUploadingIndicator">
+        <div class="spinner"></div>
+        <span>Enviando...</span>
+      </div>
+    </div>
+    <div id="modalCurrentMusic" style="font-size:12px;color:var(--muted);"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarEdicaoMusica()" style="flex:1;">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✅</span>
+  <span id="toastMsg">Salvo com sucesso!</span>
+</div>
+
+<script>
+// ============================================================
+// CLOUDINARY CONFIG
+// ============================================================
+const CLOUD_NAME = 'darxzoerw';
+const UPLOAD_PRESET = 'senac-formatura';
+
+// ============================================================
+// STATE
+// ============================================================
+let dados = { turmas: [] };
+let turmaAtiva = null;
+let pendingAudioUrl = null;
+let pendingAudioName = null;
+let modalPendingUrl = null;
+let dragSrcIndex = null;
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('formatura-senac-dados');
+  if (saved) {
+    try { dados = JSON.parse(saved); } catch(e) {}
+  }
+  renderTudo();
+
+  // Drag-over upload area
+  const ua = document.getElementById('uploadArea');
+  ua.addEventListener('dragover', e => { e.preventDefault(); ua.classList.add('drag-over'); });
+  ua.addEventListener('dragleave', () => ua.classList.remove('drag-over'));
+  ua.addEventListener('drop', e => {
+    e.preventDefault();
+    ua.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) uploadToCloudinary(file, false);
+  });
+});
+
+// ============================================================
+// SAVE
+// ============================================================
+function salvar() {
+  localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+}
+
+// ============================================================
+// TURMAS
+// ============================================================
+function adicionarTurma() {
+  const nome = document.getElementById('nomeCurso').value.trim();
+  const area = document.getElementById('areaCurso').value.trim();
+  const ano  = document.getElementById('anoTurma').value.trim();
+
+  if (!nome) { showToast('Informe o nome do curso', 'error'); return; }
+
+  const turma = {
+    id: Date.now().toString(),
+    nome,
+    area: area || 'Gestão e Negócios',
+    ano: ano || '2025',
+    alunos: []
+  };
+
+  dados.turmas.push(turma);
+  turmaAtiva = turma.id;
+  salvar();
+  renderTudo();
+  document.getElementById('nomeCurso').value = '';
+  document.getElementById('anoTurma').value = '';
+  atualizarSelectTurma();
+  showToast('Turma adicionada!');
+}
+
+function removerTurma(id) {
+  if (!confirm('Remover esta turma e todos os alunos?')) return;
+  dados.turmas = dados.turmas.filter(t => t.id !== id);
+  if (turmaAtiva === id) turmaAtiva = dados.turmas[0]?.id || null;
+  salvar();
+  renderTudo();
+  atualizarSelectTurma();
+}
+
+// ============================================================
+// ALUNOS
+// ============================================================
+function adicionarAluno() {
+  const turmaId = document.getElementById('selectTurmaAluno').value;
+  const nome = document.getElementById('nomeAluno').value.trim();
+
+  if (!turmaId) { showToast('Selecione a turma', 'error'); return; }
+  if (!nome) { showToast('Informe o nome do aluno', 'error'); return; }
+
+  const turma = dados.turmas.find(t => t.id === turmaId);
+  if (!turma) return;
+
+  turma.alunos.push({
+    nome,
+    musicaUrl: pendingAudioUrl || null,
+    musicaNome: pendingAudioName || null
+  });
+
+  turmaAtiva = turmaId;
+  salvar();
+  renderTudo();
+
+  document.getElementById('nomeAluno').value = '';
+  pendingAudioUrl = null;
+  pendingAudioName = null;
+  document.getElementById('previewPlayer').classList.remove('show');
+  document.getElementById('previewAudio').src = '';
+  showToast(`${nome} adicionado(a)!`);
+}
+
+function removerAluno(turmaId, index) {
+  const turma = dados.turmas.find(t => t.id === turmaId);
+  if (!turma) return;
+  const nome = turma.alunos[index].nome;
+  turma.alunos.splice(index, 1);
+  salvar();
+  renderTurmaContent();
+  showToast(`${nome} removido(a)`);
+}
+
+// ============================================================
+// UPLOAD CLOUDINARY
+// ============================================================
+async function uploadToCloudinary(file, isModal = false) {
+  const indicator = isModal
+    ? document.getElementById('modalUploadingIndicator')
+    : document.getElementById('uploadingIndicator');
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+
+  indicator.classList.add('show');
+  if (!isModal) {
+    progressBar.style.display = 'block';
+    progressFill.style.width = '0%';
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', UPLOAD_PRESET);
+  formData.append('folder', 'formatura');
+  formData.append('resource_type', 'video'); // Cloudinary usa 'video' para áudio
+
+  try {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`);
+
+    if (!isModal) {
+      xhr.upload.addEventListener('progress', e => {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          progressFill.style.width = pct + '%';
+        }
+      });
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      xhr.onload = () => {
+        if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
+        else reject(new Error('Upload falhou'));
+      };
+      xhr.onerror = () => reject(new Error('Erro de rede'));
+      xhr.send(formData);
+    });
+
+    const url = result.secure_url;
+    const nomArquivo = file.name.replace('.mp3','').replace('.wav','').replace('.ogg','');
+
+    if (isModal) {
+      modalPendingUrl = url;
+      document.getElementById('modalCurrentMusic').innerHTML =
+        `✅ <strong style="color:var(--success)">Arquivo enviado:</strong> ${nomArquivo}`;
+    } else {
+      pendingAudioUrl = url;
+      pendingAudioName = nomArquivo;
+
+      const player = document.getElementById('previewPlayer');
+      player.classList.add('show');
+      document.getElementById('previewFilename').textContent = nomArquivo;
+      document.getElementById('previewStatus').textContent = 'Upload concluído ✓';
+      document.getElementById('previewAudio').src = url;
+      progressFill.style.width = '100%';
+      setTimeout(() => { progressBar.style.display = 'none'; }, 800);
+    }
+
+    showToast('Música enviada com sucesso!');
+
+  } catch(err) {
+    showToast('Erro no upload: ' + err.message, 'error');
+  } finally {
+    indicator.classList.remove('show');
+  }
+}
+
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (file) uploadToCloudinary(file, false);
+}
+
+function handleModalFileSelect(event) {
+  const file = event.target.files[0];
+  if (file) uploadToCloudinary(file, true);
+}
+
+function togglePreview() {
+  const audio = document.getElementById('previewAudio');
+  const btn = document.querySelector('.play-btn');
+  if (audio.paused) { audio.play(); btn.textContent = '⏸'; }
+  else { audio.pause(); btn.textContent = '▶'; }
+  audio.onended = () => { btn.textContent = '▶'; };
+}
+
+// ============================================================
+// MODAL EDITAR MÚSICA
+// ============================================================
+function abrirModal(turmaId, alunoIndex) {
+  const turma = dados.turmas.find(t => t.id === turmaId);
+  const aluno = turma?.alunos[alunoIndex];
+  if (!aluno) return;
+
+  document.getElementById('modalTurmaId').value = turmaId;
+  document.getElementById('modalAlunoIndex').value = alunoIndex;
+  document.getElementById('modalAlunoNome').textContent = aluno.nome;
+  document.getElementById('modalCurrentMusic').innerHTML = aluno.musicaUrl
+    ? `🎵 Atual: <strong>${aluno.musicaNome || 'arquivo salvo'}</strong>`
+    : '⚠️ Nenhuma música cadastrada';
+  modalPendingUrl = null;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function fecharModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  modalPendingUrl = null;
+}
+
+function salvarEdicaoMusica() {
+  if (!modalPendingUrl) { showToast('Selecione um arquivo MP3 primeiro', 'error'); return; }
+  const turmaId = document.getElementById('modalTurmaId').value;
+  const idx = parseInt(document.getElementById('modalAlunoIndex').value);
+  const turma = dados.turmas.find(t => t.id === turmaId);
+  if (!turma) return;
+  turma.alunos[idx].musicaUrl = modalPendingUrl;
+  salvar();
+  renderTurmaContent();
+  fecharModal();
+  showToast('Música atualizada!');
+}
+
+// ============================================================
+// DRAG & DROP REORDENAÇÃO
+// ============================================================
+function onDragStart(e, index) {
+  dragSrcIndex = index;
+  e.dataTransfer.effectAllowed = 'move';
+  e.currentTarget.classList.add('dragging');
+}
+
+function onDragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
+}
+
+function onDragOver(e, index) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function onDrop(e, dropIndex) {
+  e.preventDefault();
+  if (dragSrcIndex === null || dragSrcIndex === dropIndex) return;
+  const turma = dados.turmas.find(t => t.id === turmaAtiva);
+  if (!turma) return;
+  const [moved] = turma.alunos.splice(dragSrcIndex, 1);
+  turma.alunos.splice(dropIndex, 0, moved);
+  dragSrcIndex = null;
+  salvar();
+  renderTurmaContent();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderTudo() {
+  renderTabs();
+  renderTurmaContent();
+  atualizarSelectTurma();
+}
+
+function renderTabs() {
+  const container = document.getElementById('turmaTabs');
+  if (dados.turmas.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = dados.turmas.map(t => `
+    <button class="turma-tab ${t.id === turmaAtiva ? 'active' : ''}"
+      onclick="setTurmaAtiva('${t.id}')">
+      ${t.nome}
+    </button>
+  `).join('');
+}
+
+function setTurmaAtiva(id) {
+  turmaAtiva = id;
+  renderTabs();
+  renderTurmaContent();
+}
+
+function renderTurmaContent() {
+  const container = document.getElementById('turmaContent');
+
+  if (dados.turmas.length === 0) {
+    container.innerHTML = `
+      <div class="no-turma">
+        <div style="font-size:48px;margin-bottom:12px;">🎓</div>
+        <h3>Nenhuma turma cadastrada</h3>
+        <p style="font-size:13px;margin-top:6px;">Adicione a primeira turma ao lado</p>
+      </div>`;
+    return;
+  }
+
+  if (!turmaAtiva) turmaAtiva = dados.turmas[0].id;
+  const turma = dados.turmas.find(t => t.id === turmaAtiva);
+  if (!turma) return;
+
+  const comMusica = turma.alunos.filter(a => a.musicaUrl).length;
+
+  container.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div>
+          <strong style="font-size:15px;">${turma.nome}</strong>
+          <span style="color:var(--muted);font-size:13px;margin-left:8px;">${turma.area} · ${turma.ano}</span>
+        </div>
+        <div class="turma-actions">
+          <span class="count-badge">${turma.alunos.length} alunos</span>
+          <button class="btn btn-sm btn-danger" onclick="removerTurma('${turma.id}')">🗑️</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);">
+        🎵 ${comMusica} com música · ${turma.alunos.length - comMusica} sem música
+      </div>
+    </div>
+
+    ${turma.alunos.length === 0 ? `
+      <div class="empty-state">
+        <div class="empty-icon">👤</div>
+        <p>Nenhum aluno cadastrado nesta turma.<br>Adicione alunos no painel ao lado.</p>
+      </div>
+    ` : `
+      <div class="ordem-info">☰ Arraste para reordenar a sequência de chamada</div>
+      <div class="alunos-list" id="alunosList">
+        ${turma.alunos.map((a, i) => `
+          <div class="aluno-item"
+            draggable="true"
+            ondragstart="onDragStart(event, ${i})"
+            ondragend="onDragEnd(event)"
+            ondragover="onDragOver(event, ${i})"
+            ondrop="onDrop(event, ${i})">
+            <div class="drag-handle">☰</div>
+            <div>
+              <div class="aluno-nome">${i+1}. ${a.nome}</div>
+              <div class="aluno-musica">${a.musicaNome || '—'}</div>
+            </div>
+            <div>
+              ${a.musicaUrl
+                ? `<span class="music-badge has-music">🎵 OK</span>`
+                : `<span class="music-badge no-music">Sem música</span>`
+              }
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-sm" style="background:var(--dark3);border:1px solid var(--border);color:var(--text);"
+                onclick="abrirModal('${turma.id}', ${i})">✏️</button>
+              <button class="btn btn-sm btn-danger"
+                onclick="removerAluno('${turma.id}', ${i})">🗑️</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `}
+  `;
+}
+
+function atualizarSelectTurma() {
+  const sel = document.getElementById('selectTurmaAluno');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— Selecione a turma —</option>' +
+    dados.turmas.map(t => `<option value="${t.id}" ${t.id === current ? 'selected' : ''}>${t.nome}</option>`).join('');
+}
+
+// ============================================================
+// EXPORT
+// ============================================================
+function exportarDados() {
+  const json = JSON.stringify(dados, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'formatura-dados.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Arquivo JSON salvo!');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  const text = document.getElementById('toastMsg');
+  icon.textContent = type === 'success' ? '✅' : '❌';
+  text.textContent = msg;
+  toast.className = `toast show ${type}`;
+  setTimeout(() => { toast.classList.remove('show'); }, 3000);
+}
+
+// Fechar modal clicando fora
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) fecharModal();
+});
+</script>
+</body>
+</html>
