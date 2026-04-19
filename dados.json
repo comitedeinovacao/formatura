@@ -65,6 +65,12 @@
           "musicaNome": "Kaua - VEIGH - Talvez Você Precise de Mim"
         },
         {
+          "nome": "Leonardo Frascino Prieto",
+          "musicaUrl": null,
+          "musicaNome": null,
+          "musicaInicio": 0
+        },
+        {
           "nome": "Maria Eduarda Moriwaki Barreto",
           "musicaUrl": "https://res.cloudinary.com/darxzoerw/video/upload/v1776603696/formatura/wq9941hcetnehgipf3xt.mp3",
           "musicaNome": "Maria Eduarda - Tempos modernos"
@@ -95,12 +101,6 @@
           "nome": "Vanessa Alcântara da Silva Sechim",
           "musicaUrl": "https://res.cloudinary.com/darxzoerw/video/upload/v1776604025/formatura/upp3uoutjzquo7z34xbc.mp3",
           "musicaNome": "Vanessa - A Bênção"
-        },
-        {
-          "nome": "Leonardo Frascino Prieto",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
         },
         {
           "nome": "Tiago Sant Ana Verza",
