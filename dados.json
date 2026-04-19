@@ -21,6 +21,12 @@
           "musicaNome": "Aline - This Year (Blessing)"
         },
         {
+          "nome": "Bruna Coelho Saraiva de Moraes",
+          "musicaUrl": null,
+          "musicaNome": null,
+          "musicaInicio": 0
+        },
+        {
           "nome": "Caroline Pereira de Souza",
           "musicaUrl": "https://res.cloudinary.com/darxzoerw/video/upload/v1776607457/formatura/pwiexlex0wf9a0kfdisw.mp3",
           "musicaNome": "Caroline - Vencedor – Thiaguinho",
@@ -30,12 +36,6 @@
           "nome": "Daniel Miranda dos Santos",
           "musicaUrl": "https://res.cloudinary.com/darxzoerw/video/upload/v1776603532/formatura/rabrtp4mcrhv8ollwrzg.mp3",
           "musicaNome": "Daniel - WALK THE MOON"
-        },
-        {
-          "nome": "Bruna Coelho Saraiva de Moraes",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
         },
         {
           "nome": "Gabriel de Oliveira Marcelino",
