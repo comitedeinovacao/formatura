@@ -6,7 +6,7 @@
 <title>Colação de Grau — Senac Araçatuba</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
 <style>
 :root{
   --azul:#004587;
@@ -108,7 +108,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 .kicker{font-size:clamp(11px,1.1vw,16px);font-weight:700;color:var(--laranja);letter-spacing:4px;text-transform:uppercase;text-shadow:0 0 20px rgba(247,148,29,.4);}
 .t-big{font-weight:900;font-size:clamp(64px,9vw,130px);line-height:.9;text-transform:uppercase;letter-spacing:-2px;color:#fff;margin-top:12px;}
 .t-big .lar{color:var(--laranja);}
-.t-script{font-family:'Great Vibes', cursive;font-weight:400;font-size:clamp(56px,8vw,110px);color:#fff;margin-top:-15px;letter-spacing:1px;text-shadow:0 0 20px rgba(0,0,0,0.5);line-height:0.8;margin-left:5px;}
+.t-script{font-family:'Montserrat', sans-serif;font-weight:700;font-style:italic;font-size:clamp(36px,5vw,72px);color:rgba(255,255,255,.7);margin-top:4px;letter-spacing:2px;text-transform:uppercase;line-height:1.1;}
 .t-sub{font-size:clamp(13px,1.3vw,20px);font-weight:500;color:rgba(255,255,255,.55);letter-spacing:3px;margin-top:18px;text-transform:uppercase;}
 .t-nome{font-weight:900;font-size:clamp(44px,6vw,90px);line-height:1;text-transform:uppercase;letter-spacing:-.5px;color:#fff;margin-top:10px;}
 .t-nome .primeiro{color:var(--laranja);text-shadow:0 0 40px rgba(247,148,29,.3);}
@@ -395,8 +395,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Abertura oficial</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Abertura</span><br>da<br>Solenidade</div>
-    <div class="t-script fade d4">Luís Antônio Lima</div>
+    <div class="t-nome fade d3"><span class="primeiro">Luís Antônio</span><br>Lima</div>
+    <div class="t-role fade d4">Abertura da Solenidade</div>
   </div>
 </div>
 
@@ -422,8 +422,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Discurso</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Discurso</span><br>da Turma</div>
-    <div class="t-script fade d4" id="nome-orador">Orador(a) da Turma</div>
+    <div class="t-nome fade d3" id="nome-orador">Orador(a) da Turma</div>
+    <div class="t-role fade d4">Discurso da Turma</div>
   </div>
 </div>
 
@@ -438,8 +438,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Paraninfo</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Discurso</span><br>do Docente</div>
-    <div class="t-script fade d4" id="nome-paraninfo-disc">Docente Paraninfo</div>
+    <div class="t-nome fade d3" id="nome-paraninfo-disc">Docente Paraninfo</div>
+    <div class="t-role fade d4">Discurso do Docente</div>
   </div>
 </div>
 
@@ -453,8 +453,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Rito solene</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Juramento</span><br>da Turma</div>
-    <div class="t-script fade d4" id="nome-juramentista">Juramentista</div>
+    <div class="t-nome fade d3" id="nome-juramentista">Juramentista</div>
+    <div class="t-role fade d4">Juramento da Turma</div>
   </div>
 </div>
 
