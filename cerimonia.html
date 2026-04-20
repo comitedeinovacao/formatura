@@ -157,6 +157,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 .s-hino .hino-overlay{position:absolute;inset:0;background:linear-gradient(135deg,var(--azul-escuro) 0%,var(--azul) 60%,var(--azul-escuro) 100%);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transition:opacity .8s ease;}
 .s-hino .hino-overlay.oculto{opacity:0;pointer-events:none;}
 .s-hino .hino-bandeira{font-size:14px;font-weight:700;letter-spacing:4px;color:var(--laranja);text-transform:uppercase;}
+.s-hino .hino-dica{font-size:13px;font-weight:600;letter-spacing:3px;color:rgba(255,255,255,.35);text-transform:uppercase;border:1px solid rgba(255,255,255,.15);padding:8px 20px;border-radius:20px;}
 .s-hino .t-big{text-align:center;font-size:clamp(40px,5.5vw,80px);}
 
 /* =============================================
@@ -425,6 +426,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
     <div class="linha-laranja fade d2" style="margin:0 auto;"></div>
     <div class="t-big fade d3">Hino Nacional<br><span class="lar">Brasileiro</span></div>
     <div class="hino-bandeira fade d4">Brasil · República Federativa</div>
+    <div class="hino-dica fade d5" id="hinoDica">Pressione → para iniciar</div>
   </div>
 </div>
 
@@ -569,6 +571,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 <script>
 // ── YOUTUBE PLAYER ─────────────────────────────────────────
 let hinoPlayer = null;
+let hinoIniciado = false;
 function onYouTubeIframeAPIReady() {
   hinoPlayer = new YT.Player('hinoIframe', {
     events: {
@@ -875,7 +878,11 @@ function goTo(idx) {
   }
 
   if (slide.id === 'slide-hino') {
-    if (hinoPlayer && hinoPlayer.seekTo) { hinoPlayer.seekTo(0); hinoPlayer.playVideo(); }
+    // Entra no slide — aguarda comando manual para iniciar
+    hinoIniciado = false;
+    if (hinoPlayer && hinoPlayer.seekTo) { hinoPlayer.seekTo(0); hinoPlayer.stopVideo(); }
+    document.getElementById('hinoOverlay').classList.remove('oculto');
+    document.getElementById('hinoDica').style.display = '';
   } else {
     if (hinoPlayer && hinoPlayer.pauseVideo) { hinoPlayer.pauseVideo(); }
   }
@@ -884,7 +891,17 @@ function goTo(idx) {
   document.getElementById('scCur').textContent = pad(current+1);
 }
 
-function nextSlide(){ goTo(current+1); }
+function nextSlide() {
+  const slide = slides[current];
+  if (slide && slide.id === 'slide-hino' && !hinoIniciado) {
+    // 1ª pressão no slide do hino → inicia o vídeo
+    hinoIniciado = true;
+    document.getElementById('hinoDica').style.display = 'none';
+    if (hinoPlayer && hinoPlayer.playVideo) hinoPlayer.playVideo();
+    return;
+  }
+  goTo(current + 1);
+}
 function prevSlide(){ goTo(current-1); }
 
 // ── ÁUDIO ──────────────────────────────────────────────────
