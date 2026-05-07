@@ -456,8 +456,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   </div>
 </div>
 
-<!-- S15 DISCURSO DO DOCENTE -->
-<div class="slide slide-padrao">
+<!-- S15 DISCURSO DO PARANINFO (título + slides individuais inseridos via JS) -->
+<div class="slide slide-padrao" id="ref-paraninfo-disc">
   <div class="grid-bg"></div>
   <div class="slide-orb orb1"></div>
   <div class="slide-orb orb2"></div>
@@ -467,7 +467,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Discurso do Paraninfo</div>
     <div class="linha-laranja fade d2"></div>
-    <div id="container-paraninfo-disc" class="fade d3"></div>
+    <div class="t-big fade d3"><span class="lar">Discurso</span><br>do Paraninfo</div>
   </div>
 </div>
 
@@ -756,8 +756,7 @@ function preencherDadosCerimonia() {
   const turmas = dados.turmas || [];
 
   const blocos = [
-    { id: 'container-paraninfo-disc', campo: 'paraninfo',    role: 'Discurso do Docente Paraninfo' },
-    { id: 'container-homenageado',    campo: 'homenageado',  role: 'Docente Homenageado(a)' },
+    { id: 'container-homenageado', campo: 'homenageado', role: 'Docente Homenageado(a)' },
   ];
 
   blocos.forEach(({ id, campo, role }) => {
@@ -869,13 +868,16 @@ function criarSlidePessoa(turma, nome, role, kicker) {
 }
 
 function gerarSlidesPessoas() {
-  const refParaninfo    = document.getElementById('ref-paraninfo');
-  const refOrador       = document.getElementById('ref-orador');
-  const refJuramentista = document.getElementById('ref-juramentista');
+  const refParaninfo     = document.getElementById('ref-paraninfo');
+  const refParaninfDisc  = document.getElementById('ref-paraninfo-disc');
+  const refOrador        = document.getElementById('ref-orador');
+  const refJuramentista  = document.getElementById('ref-juramentista');
 
   [...dados.turmas].reverse().forEach(turma => {
     if (refParaninfo && turma.paraninfo)
       refParaninfo.after(criarSlidePessoa(turma, turma.paraninfo, 'Docente Paraninfo da Turma', 'Composição da Mesa Solene'));
+    if (refParaninfDisc && turma.paraninfo)
+      refParaninfDisc.after(criarSlidePessoa(turma, turma.paraninfo, 'Discurso do Docente Paraninfo', 'Discurso do Paraninfo'));
     if (refOrador && turma.orador)
       refOrador.after(criarSlidePessoa(turma, turma.orador, 'Orador(a) da Turma', 'Discurso da Turma'));
     if (refJuramentista && turma.juramentista)
