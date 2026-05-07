@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Colação de Grau — Senac Araçatuba</title>
+<title>Encerramento de Curso — Senac Araçatuba</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
@@ -192,6 +192,17 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 .back-btn{position:fixed;bottom:6px;left:46px;z-index:200;font-size:10px;color:rgba(255,255,255,.06);text-decoration:none;font-family:monospace;}
 .back-btn:hover{color:rgba(255,255,255,.35);}
 
+/* =============================================
+   SLIDE PESSOA CENTRADO
+   ============================================= */
+.s-pessoa{background:linear-gradient(135deg,var(--azul-escuro) 0%,var(--azul-mid) 100%);align-items:center;justify-content:center;}
+.s-pessoa .inner{align-items:center;text-align:center;justify-content:center;}
+.s-pessoa .linha-laranja{margin:16px auto;}
+.t-nome-central{font-weight:900;font-size:clamp(36px,5.5vw,88px);line-height:1;text-transform:uppercase;letter-spacing:-.5px;color:#fff;margin-top:10px;text-align:center;}
+.t-nome-central .primeiro{color:var(--laranja);text-shadow:0 0 40px rgba(247,148,29,.3);}
+.t-curso-central{font-size:clamp(12px,1.4vw,22px);font-weight:700;color:var(--laranja);letter-spacing:3px;text-transform:uppercase;margin-top:20px;opacity:.9;}
+.t-role-central{font-size:clamp(11px,1vw,16px);font-weight:600;color:rgba(255,255,255,.45);letter-spacing:3px;text-transform:uppercase;margin-top:8px;}
+
 /* Duplo — dois nomes por slide (duas turmas) */
 .t-dual{display:grid;grid-template-columns:1fr 1px 1fr;gap:0 40px;margin-top:12px;align-items:start;width:100%;}
 .t-dual-sep{background:rgba(255,255,255,.15);align-self:stretch;min-height:120px;}
@@ -228,7 +239,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Senac Araçatuba · Gestão e Negócios</div>
     <div class="linha-laranja fade d2" style="margin:16px auto;"></div>
-    <div class="t-big fade d3"><span class="lar">Cerimônia</span> de<br>Colação<br><span class="lar">de Grau</span></div>
+    <div class="t-big fade d3"><span class="lar">Cerimônia</span> de<br>Encerramento<br><span class="lar">de Curso</span></div>
     <div class="t-sub fade d4" id="capa-cursos">Área de Gestão e Negócios</div>
   </div>
 </div>
@@ -331,8 +342,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   </div>
 </div>
 
-<!-- S08 PARANINFO -->
-<div class="slide slide-padrao">
+<!-- S08 PARANINFO (título + slides individuais inseridos via JS) -->
+<div class="slide slide-padrao" id="ref-paraninfo">
   <div class="grid-bg"></div>
   <div class="slide-orb orb1"></div>
   <div class="slide-orb orb2"></div>
@@ -342,7 +353,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Composição da Mesa Solene</div>
     <div class="linha-laranja fade d2"></div>
-    <div id="container-paraninfo" class="fade d3"></div>
+    <div class="t-big fade d3"><span class="lar">Paraninfo</span><br>da Turma</div>
   </div>
 </div>
 
@@ -405,7 +416,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Abertura oficial</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-nome fade d3"><span class="primeiro">Luís Antônio</span><br>Lima</div>
+    <div class="t-nome fade d3"><span class="primeiro">Rejan Belmiro</span><br>Pompeo Filho</div>
     <div class="t-role fade d4">Abertura da Solenidade</div>
   </div>
 </div>
@@ -422,7 +433,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
     <div class="slide-orb orb1"></div>
     <div class="slide-orb orb2"></div>
     <div class="scanline"></div>
-    <div class="kicker fade d1">Cerimônia de Colação de Grau</div>
+    <div class="kicker fade d1">Cerimônia de Encerramento de Curso</div>
     <div class="linha-laranja fade d2" style="margin:0 auto;"></div>
     <div class="t-big fade d3">Hino Nacional<br><span class="lar">Brasileiro</span></div>
     <div class="hino-bandeira fade d4">Brasil · República Federativa</div>
@@ -430,8 +441,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   </div>
 </div>
 
-<!-- S14 DISCURSO DA TURMA -->
-<div class="slide slide-padrao">
+<!-- S14 DISCURSO DA TURMA (título + slides individuais inseridos via JS) -->
+<div class="slide slide-padrao" id="ref-orador">
   <div class="grid-bg"></div>
   <div class="slide-orb orb1"></div>
   <div class="slide-orb orb2"></div>
@@ -441,7 +452,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Discurso</div>
     <div class="linha-laranja fade d2"></div>
-    <div id="container-orador" class="fade d3"></div>
+    <div class="t-big fade d3"><span class="lar">Discurso</span><br>da Turma</div>
   </div>
 </div>
 
@@ -460,8 +471,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   </div>
 </div>
 
-<!-- S16 JURAMENTO -->
-<div class="slide slide-padrao">
+<!-- S16 JURAMENTO (título + slides individuais inseridos via JS) -->
+<div class="slide slide-padrao" id="ref-juramentista">
   <div class="grid-bg"></div>
   <div class="slide-orb orb1"></div>
   <div class="slide-orb orb2"></div>
@@ -470,22 +481,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Rito solene</div>
     <div class="linha-laranja fade d2"></div>
-    <div id="container-juramentista" class="fade d3"></div>
-  </div>
-</div>
-
-<!-- S17 CAPELO -->
-<div class="slide slide-padrao">
-  <div class="grid-bg"></div>
-  <div class="slide-orb orb1"></div>
-  <div class="slide-orb orb2"></div>
-  <div class="scanline"></div>
-  <div class="bg-diagonal"></div>
-  <img class="bg-img" src="aracatuba_laboratorio-tecnologia1.jpg" alt="">
-  <div class="inner">
-    <div class="kicker fade d1">Momento especial</div>
-    <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Capelo</span><br>da Turma</div>
+    <div class="t-big fade d3"><span class="lar">Juramento</span><br>das Turmas</div>
   </div>
 </div>
 
@@ -500,7 +496,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   <div class="inner">
     <div class="kicker fade d1">Rito de entrega</div>
     <div class="linha-laranja fade d2"></div>
-    <div class="t-big fade d3"><span class="lar">Entrega</span><br>do<br>Certificado</div>
+    <div class="t-big fade d3"><span class="lar">Entregas</span><br>dos<br>Canudos</div>
   </div>
 </div>
 
@@ -518,6 +514,21 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
     <div class="kicker fade d1">Com gratidão</div>
     <div class="linha-laranja fade d2"></div>
     <div class="t-nome fade d3"><span class="primeiro">Agradecimento</span><br>aos Familiares</div>
+  </div>
+</div>
+
+<!-- CAPELO (movido para antes do encerramento) -->
+<div class="slide slide-padrao">
+  <div class="grid-bg"></div>
+  <div class="slide-orb orb1"></div>
+  <div class="slide-orb orb2"></div>
+  <div class="scanline"></div>
+  <div class="bg-diagonal"></div>
+  <img class="bg-img" src="aracatuba_laboratorio-tecnologia1.jpg" alt="">
+  <div class="inner">
+    <div class="kicker fade d1">Momento especial</div>
+    <div class="linha-laranja fade d2"></div>
+    <div class="t-big fade d3"><span class="lar">Capelo</span><br>da Turma</div>
   </div>
 </div>
 
@@ -561,7 +572,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
 <div class="footer">
   <div class="footer-left">SENAC ARAÇATUBA · GESTÃO E NEGÓCIOS</div>
   <div class="dots" id="dotsContainer"></div>
-  <div class="footer-right">COLAÇÃO DE GRAU · 2026</div>
+  <div class="footer-right">ENCERRAMENTO DE CURSO · 2026</div>
 </div>
 
 <a href="admin.html" class="admin-link">admin</a>
@@ -605,6 +616,7 @@ function pad(n){ return String(n).padStart(2,'0'); }
 document.addEventListener('DOMContentLoaded', async () => {
   await carregarDados();
   gerarSlidesDinamicos();
+  gerarSlidesPessoas();
   construirSlides();
   construirDots();
   goTo(0);
@@ -744,11 +756,8 @@ function preencherDadosCerimonia() {
   const turmas = dados.turmas || [];
 
   const blocos = [
-    { id: 'container-paraninfo',      campo: 'paraninfo',    role: 'Docente Paraninfo da Turma' },
     { id: 'container-paraninfo-disc', campo: 'paraninfo',    role: 'Discurso do Docente Paraninfo' },
     { id: 'container-homenageado',    campo: 'homenageado',  role: 'Docente Homenageado(a)' },
-    { id: 'container-orador',         campo: 'orador',       role: 'Orador(a) da Turma' },
-    { id: 'container-juramentista',   campo: 'juramentista', role: 'Juramentista da Turma' },
   ];
 
   blocos.forEach(({ id, campo, role }) => {
@@ -839,6 +848,39 @@ function criarSlideAlunoCert(turma, aluno) {
       <div class="t-role fade d4">Técnico(a) em ${turma.nome.replace(/técnico\s+em\s+/i,'').trim()}</div>
     </div>`;
   return d;
+}
+
+function criarSlidePessoa(turma, nome, role, kicker) {
+  const d = document.createElement('div');
+  d.className = 'slide s-pessoa';
+  d.innerHTML = `
+    <div class="grid-bg"></div>
+    <div class="slide-orb orb1"></div>
+    <div class="slide-orb orb2"></div>
+    <div class="scanline"></div>
+    <div class="inner">
+      <div class="kicker fade d1">${kicker}</div>
+      <div class="linha-laranja fade d2"></div>
+      <div class="t-nome-central fade d3">${formatNome(nome)}</div>
+      <div class="t-curso-central fade d4">${turma.nome}</div>
+      <div class="t-role-central fade d5">${role}</div>
+    </div>`;
+  return d;
+}
+
+function gerarSlidesPessoas() {
+  const refParaninfo    = document.getElementById('ref-paraninfo');
+  const refOrador       = document.getElementById('ref-orador');
+  const refJuramentista = document.getElementById('ref-juramentista');
+
+  [...dados.turmas].reverse().forEach(turma => {
+    if (refParaninfo && turma.paraninfo)
+      refParaninfo.after(criarSlidePessoa(turma, turma.paraninfo, 'Docente Paraninfo da Turma', 'Composição da Mesa Solene'));
+    if (refOrador && turma.orador)
+      refOrador.after(criarSlidePessoa(turma, turma.orador, 'Orador(a) da Turma', 'Discurso da Turma'));
+    if (refJuramentista && turma.juramentista)
+      refJuramentista.after(criarSlidePessoa(turma, turma.juramentista, 'Juramentista da Turma', 'Juramento das Turmas'));
+  });
 }
 
 // ── SEQUÊNCIA ──────────────────────────────────────────────
