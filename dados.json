@@ -9,7 +9,14 @@
       "homenageado": "",
       "juramentista": "",
       "orador": "",
-      "alunos": []
+      "alunos": [
+        {
+          "nome": "Adriele Peracolo Morais",
+          "musicaUrl": null,
+          "musicaNome": null,
+          "musicaInicio": 0
+        }
+      ]
     }
   ]
 }
