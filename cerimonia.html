@@ -655,7 +655,6 @@ function iniciarParticulasParabens() {
 }
 
 // ── DADOS ──────────────────────────────────────────────────
-const API_URL  = 'https://script.google.com/macros/s/AKfycbx8-Okq7A2ZQUy6nVJ57TkiXMXUeyiPDFnMyvEPpwU63FVXYG_D5_mHtg6yPL9ppsYK/exec';
 const GH_RAW   = 'https://raw.githubusercontent.com/comitedeinovacao/formatura/main/dados.json';
 
 async function carregarDados() {
@@ -692,37 +691,25 @@ async function carregarDados() {
       });
     });
   }
-
-  // 1. GitHub — dados completos, cross-device
-  try {
-    const res = await fetch(GH_RAW + '?t=' + Date.now());
-    if (res.ok) {
-      const gh = await res.json();
-      if (gh?.turmas?.length > 0) {
-        mesclarInicio(gh, local);
-        mesclarCerimonia(gh, local); // complementa campos ainda não propagados pelo CDN
-        dados = gh;
-        localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
-      }
-    }
-  } catch(e) {}
-
-  // 2. Se ainda sem dados, tenta Google Sheets
-  if (!dados.turmas?.length) {
-    try {
-      const res = await fetch(API_URL);
-      if (res.ok) {
-        const sheets = await res.json();
-        mesclarInicio(sheets, local);
-        dados = sheets;
-        localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
-      }
-    } catch(e) {}
+  // 1. Prioridade: localStorage (dados mais recentes do admin)
+  if (local?.turmas?.length) {
+    dados = local;
   }
 
-  // 3. Último recurso: localStorage
-  if (!dados.turmas?.length && local?.turmas?.length) {
-    dados = local;
+  // 2. GitHub -- substitui apenas se localStorage estiver vazio
+  if (!dados.turmas?.length) {
+    try {
+      const res = await fetch(GH_RAW + '?t=' + Date.now());
+      if (res.ok) {
+        const gh = await res.json();
+        if (gh?.turmas?.length > 0) {
+          mesclarInicio(gh, local);
+          mesclarCerimonia(gh, local);
+          dados = gh;
+          localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+        }
+      }
+    } catch(e) {}
   }
 
   const cursos = dados.turmas.map(t => t.nome).join(' · ');
