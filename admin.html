@@ -709,14 +709,14 @@
   <div class="token-bar">
     <label>🔑 GitHub Token</label>
     <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="salvarToken()">
-    <span class="token-status" id="tokenStatus">Necessário para sincronizar entre dispositivos</span>
+    <span class="token-status" id="tokenStatus">Cole aqui o token para sincronizar entre dispositivos</span>
   </div>
 
   <!-- EXPORT BAR -->
   <div class="export-bar">
     <div>
       <strong>Pronto para apresentar?</strong>
-      <p>Dados salvos automaticamente. Qualquer computador acessa a cerimônia atualizada.</p>
+      <p>Dados salvos localmente e sincronizados com GitHub.</p>
     </div>
     <a href="cerimonia.html" target="_blank" class="btn btn-primary" style="width:auto;text-decoration:none;">🖥️ Abrir Apresentação</a>
   </div>
@@ -780,31 +780,43 @@ let dragSrcIndex = null;
 // ============================================================
 // INIT
 // ============================================================
-const GH_RAW = 'https://raw.githubusercontent.com/comitedeinovacao/formatura/main/dados.json';
+const GH_REPO = 'comitedeinovacao/formatura';
+const GH_FILE = 'dados.json';
+const GH_API  = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
+const GH_RAW  = `https://raw.githubusercontent.com/${GH_REPO}/main/${GH_FILE}`;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Restaura token salvo
+  // 1. Restaura token salvo
   const savedToken = localStorage.getItem('gh-token');
   if (savedToken) {
     document.getElementById('githubToken').value = savedToken;
-    document.getElementById('tokenStatus').textContent = '✅ Token salvo neste dispositivo';
+    document.getElementById('tokenStatus').textContent = '✅ Token ativo — sincronizando com GitHub';
   }
 
-  try {
-    const res = await fetch(GH_RAW + '?t=' + Date.now());
-    if (res.ok) {
-      const gh = await res.json();
-      if (gh?.turmas?.length >= 0) {
-        dados = gh;
-        localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+  // 2. PRIORIDADE: carrega do localStorage primeiro (nunca perde dados locais)
+  const savedLocal = localStorage.getItem('formatura-senac-dados');
+  if (savedLocal) {
+    try { dados = JSON.parse(savedLocal); } catch(e) {}
+  }
+
+  // 3. Se localStorage está VAZIO e há token, tenta buscar do GitHub
+  if ((!dados.turmas || dados.turmas.length === 0) && savedToken) {
+    try {
+      showToast('Buscando dados do GitHub...', 'info');
+      const res = await fetch(GH_RAW + '?t=' + Date.now());
+      if (res.ok) {
+        const gh = await res.json();
+        if (gh?.turmas?.length > 0) {
+          dados = gh;
+          localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
+          showToast('Dados carregados do GitHub ✅');
+        }
       }
-    }
-  } catch(e) {
-    const saved = localStorage.getItem('formatura-senac-dados');
-    if (saved) {
-      try { dados = JSON.parse(saved); } catch(er) {}
+    } catch(e) {
+      // Sem internet — usa o que tem localmente (já carregado acima)
     }
   }
+
   renderTudo();
 
   // Drag-over upload area
@@ -820,22 +832,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ============================================================
-// GITHUB STORAGE
+// GITHUB TOKEN
 // ============================================================
-const GH_REPO  = 'comitedeinovacao/formatura';
-const GH_FILE  = 'dados.json';
-const GH_API   = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
-
 function salvarToken() {
   const token = document.getElementById('githubToken').value.trim();
-  localStorage.setItem('gh-token', token);
-  document.getElementById('tokenStatus').textContent = token ? '✅ Token salvo neste dispositivo' : 'Necessário para sincronizar entre dispositivos';
+  if (token) {
+    localStorage.setItem('gh-token', token);
+    document.getElementById('tokenStatus').textContent = '✅ Token ativo — sincronizando com GitHub';
+  } else {
+    localStorage.removeItem('gh-token');
+    document.getElementById('tokenStatus').textContent = 'Cole aqui o token para sincronizar entre dispositivos';
+  }
 }
 
-async function salvarGitHub(token) {
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
-  const headers = { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' };
+async function enviarParaGitHub(token) {
+  const conteudo = JSON.stringify(dados, null, 2);
+  const base64   = btoa(unescape(encodeURIComponent(conteudo)));
+  const headers  = { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' };
 
+  // Busca o SHA atual do arquivo (necessário para atualizar)
   let sha = null;
   try {
     const r = await fetch(GH_API, { headers });
@@ -843,27 +858,39 @@ async function salvarGitHub(token) {
   } catch(e) {}
 
   const res = await fetch(GH_API, {
-    method: 'PUT',
+    method : 'PUT',
     headers,
-    body: JSON.stringify({ message: 'Atualiza dados da cerimônia', content, ...(sha && { sha }) })
+    body   : JSON.stringify({
+      message: 'Atualiza dados da cerimônia',
+      content: base64,
+      ...(sha && { sha })
+    })
   });
   return res.ok;
 }
 
 // ============================================================
-// SAVE
+// SAVE — salva local SEMPRE, GitHub quando token disponível
 // ============================================================
 async function salvar() {
+  // 1. Sempre salva local primeiro (instantâneo, nunca falha)
   localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
 
+  // 2. Tenta sincronizar com GitHub se token disponível
   const token = localStorage.getItem('gh-token');
   if (token) {
-    showToast('Salvando...', 'info');
-    const ok = await salvarGitHub(token);
-    if (ok) { showToast('Salvo — disponível em todos os dispositivos ✅'); return; }
-    showToast('Erro no GitHub (token inválido?)', 'error');
+    try {
+      const ok = await enviarParaGitHub(token);
+      if (ok) {
+        showToast('Salvo e sincronizado com GitHub ✅');
+      } else {
+        showToast('Salvo localmente — erro no GitHub (token inválido?)', 'error');
+      }
+    } catch(e) {
+      showToast('Salvo localmente — sem conexão com GitHub', 'error');
+    }
   } else {
-    showToast('Salvo localmente (configure o token para sincronizar)', 'error');
+    showToast('Salvo localmente ✅');
   }
 }
 
