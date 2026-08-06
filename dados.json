@@ -1,14 +1,14 @@
 {
   "turmas": [
     {
-      "id": "1785961027432",
+      "id": "1785958058223",
       "nome": "Técnico em Administração",
       "area": "Gestão e Negócios",
       "ano": "2025",
-      "paraninfo": "Thiago Henrique Melo Ramos Cortez",
-      "homenageado": "X",
-      "juramentista": "X",
-      "orador": "X",
+      "paraninfo": "",
+      "homenageado": "",
+      "juramentista": "",
+      "orador": "",
       "alunos": [
         {
           "nome": "Adriele Peracolo Morais",
@@ -36,90 +36,6 @@
         },
         {
           "nome": "Elenice de Jesus Fernandes",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Evelyn Ingriti Robles de Melo",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Ewerton Cunha de Souza",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Fernanda Lima Favarin",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Gedevan Santos Soares",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Giovanna Viana de Oliveira",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Hillary Cristine dos Santos",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "João Pedro de Almeida Vieira",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Lais Rodrigues Santos",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Luana Aparecida Alves da Silva",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Luiny Victoria Rodrigues Ferreira",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Nathalia Correa Leite",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Rafael Borges Santos",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Rayssa dos Santos Carrijo",
-          "musicaUrl": null,
-          "musicaNome": null,
-          "musicaInicio": 0
-        },
-        {
-          "nome": "Thayná Vitória Lucas",
           "musicaUrl": null,
           "musicaNome": null,
           "musicaInicio": 0
