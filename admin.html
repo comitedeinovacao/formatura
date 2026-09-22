@@ -608,14 +608,57 @@
   <div class="header-brand">
     <a href="index.html" class="btn-voltar">← Voltar</a>
     <div>
-      <div class="logo-text">Senac <span>Araçatuba</span></div>
+      <div class="logo-text">Senac <span id="hdrUnidade">...</span></div>
       <div class="header-subtitle">Sistema de Formaturas — Painel Admin</div>
     </div>
   </div>
-  <p>Gestão e Negócios · 2026</p>
+  <p id="hdrArea">...</p>
 </header>
 
 <div class="container">
+
+  <!-- CONFIGURAÇÕES GERAIS -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">⚙️ Configurações da Cerimônia</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Nome da Unidade</label>
+        <input type="text" id="cfgUnidade" placeholder="Ex: Senac Araçatuba" oninput="atualizarConfig()">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Área</label>
+        <input type="text" id="cfgArea" placeholder="Ex: Gestão e Negócios" oninput="atualizarConfig()">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Ano da Cerimônia</label>
+        <input type="text" id="cfgAno" placeholder="Ex: 2026" maxlength="4" oninput="atualizarConfig()">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Técnico(a) da Área</label>
+        <input type="text" id="cfgTecnicoArea" placeholder="Nome completo" oninput="atualizarConfig()">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Gerente</label>
+        <input type="text" id="cfgGerente" placeholder="Nome completo" oninput="atualizarConfig()">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Técnico(a) Educacional</label>
+        <input type="text" id="cfgTecnicoEd" placeholder="Nome completo" oninput="atualizarConfig()">
+      </div>
+      <div class="form-group" style="margin-bottom:0;grid-column:1/-1;">
+        <label>Docentes (um por linha)</label>
+        <textarea id="cfgDocentes" rows="3" placeholder="Ex:&#10;Prof. João Silva&#10;Profa. Maria Souza"
+          oninput="atualizarConfig()"
+          style="width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;resize:vertical;outline:none;transition:border-color .2s;"
+          onfocus="this.style.borderColor='var(--senac-orange)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:10px;align-items:center;">
+      <button class="btn btn-primary" style="width:auto;" onclick="salvarConfig()">💾 Salvar Configurações</button>
+      <span style="font-size:12px;color:var(--muted);">As configurações ficam salvas e sincronizadas com as demais turmas.</span>
+    </div>
+  </div>
+
   <div class="grid">
 
     <!-- COLUNA ESQUERDA: Cadastro -->
@@ -630,7 +673,7 @@
         </div>
         <div class="form-group">
           <label>Área</label>
-          <input type="text" id="areaCurso" placeholder="Ex: Gestão e Negócios" value="Gestão e Negócios">
+          <input type="text" id="areaCurso" placeholder="Ex: Gestão e Negócios">
         </div>
         <div class="form-group">
           <label>Ano / Turma</label>
@@ -709,14 +752,14 @@
   <div class="token-bar">
     <label>🔑 GitHub Token</label>
     <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="salvarToken()">
-    <span class="token-status" id="tokenStatus">Cole aqui o token para sincronizar entre dispositivos</span>
+    <span class="token-status" id="tokenStatus">Necessário para sincronizar entre dispositivos</span>
   </div>
 
   <!-- EXPORT BAR -->
   <div class="export-bar">
     <div>
       <strong>Pronto para apresentar?</strong>
-      <p>Dados salvos localmente e sincronizados com GitHub.</p>
+      <p>Dados salvos automaticamente. Qualquer computador acessa a cerimônia atualizada.</p>
     </div>
     <a href="cerimonia.html" target="_blank" class="btn btn-primary" style="width:auto;text-decoration:none;">🖥️ Abrir Apresentação</a>
   </div>
@@ -770,7 +813,7 @@ const UPLOAD_PRESET = 'senac-formatura';
 // ============================================================
 // STATE
 // ============================================================
-let dados = { turmas: [] };
+let dados = { config: { unidade: '', area: '', ano: '', tecnicoArea: '', gerente: '', tecnicoEd: '', docentes: '' }, turmas: [] };
 let turmaAtiva = null;
 let pendingAudioUrl = null;
 let pendingAudioName = null;
@@ -780,44 +823,40 @@ let dragSrcIndex = null;
 // ============================================================
 // INIT
 // ============================================================
-const GH_REPO = 'comitedeinovacao/formatura';
-const GH_FILE = 'dados.json';
-const GH_API  = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
-const GH_RAW  = `https://raw.githubusercontent.com/${GH_REPO}/main/${GH_FILE}`;
+const GH_RAW = 'https://raw.githubusercontent.com/comitedeinovacao/formatura/main/dados.json';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1. Restaura token salvo
+  // Restaura token salvo
   const savedToken = localStorage.getItem('gh-token');
   if (savedToken) {
     document.getElementById('githubToken').value = savedToken;
-    document.getElementById('tokenStatus').textContent = '✅ Token ativo — sincronizando com GitHub';
+    document.getElementById('tokenStatus').textContent = '✅ Token salvo neste dispositivo';
   }
 
-  // 2. PRIORIDADE: carrega do localStorage primeiro (nunca perde dados locais)
+  // 1. localStorage PRIMEIRO (dados mais recentes do usuário)
   const savedLocal = localStorage.getItem('formatura-senac-dados');
   if (savedLocal) {
     try { dados = JSON.parse(savedLocal); } catch(e) {}
+    if (!dados.config) dados.config = { unidade: '', area: '', ano: '', tecnicoArea: '', gerente: '', tecnicoEd: '', docentes: '' };
   }
 
-  // 3. Se localStorage está VAZIO e há token, tenta buscar do GitHub
+  // 2. Busca GitHub SOMENTE se localStorage estiver vazio e houver token
   if ((!dados.turmas || dados.turmas.length === 0) && savedToken) {
-    try {
-      showToast('Buscando dados do GitHub...', 'info');
-      const res = await fetch(GH_RAW + '?t=' + Date.now());
-      if (res.ok) {
-        const gh = await res.json();
-        if (gh?.turmas?.length > 0) {
-          dados = gh;
-          localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
-          showToast('Dados carregados do GitHub ✅');
-        }
+  try {
+    const res = await fetch(GH_RAW + '?t=' + Date.now());
+    if (res.ok) {
+      const gh = await res.json();
+      if (gh?.turmas?.length > 0) {
+        dados = gh;
+        if (!dados.config) dados.config = { unidade: '', area: '', ano: '', tecnicoArea: '', gerente: '', tecnicoEd: '', docentes: '' };
+        localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
       }
-    } catch(e) {
-      // Sem internet — usa o que tem localmente (já carregado acima)
     }
-  }
+  } catch(e) { /* sem conexão, usa localStorage já carregado */ }
+  } // fim bloco GitHub
 
   renderTudo();
+  preencherFormConfig();
 
   // Drag-over upload area
   const ua = document.getElementById('uploadArea');
@@ -832,25 +871,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ============================================================
-// GITHUB TOKEN
+// GITHUB STORAGE
 // ============================================================
+const GH_REPO  = 'comitedeinovacao/formatura';
+const GH_FILE  = 'dados.json';
+const GH_API   = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
+
 function salvarToken() {
   const token = document.getElementById('githubToken').value.trim();
-  if (token) {
-    localStorage.setItem('gh-token', token);
-    document.getElementById('tokenStatus').textContent = '✅ Token ativo — sincronizando com GitHub';
-  } else {
-    localStorage.removeItem('gh-token');
-    document.getElementById('tokenStatus').textContent = 'Cole aqui o token para sincronizar entre dispositivos';
-  }
+  localStorage.setItem('gh-token', token);
+  document.getElementById('tokenStatus').textContent = token ? '✅ Token salvo neste dispositivo' : 'Necessário para sincronizar entre dispositivos';
 }
 
-async function enviarParaGitHub(token) {
-  const conteudo = JSON.stringify(dados, null, 2);
-  const base64   = btoa(unescape(encodeURIComponent(conteudo)));
-  const headers  = { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' };
+async function salvarGitHub(token) {
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
+  const headers = { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' };
 
-  // Busca o SHA atual do arquivo (necessário para atualizar)
   let sha = null;
   try {
     const r = await fetch(GH_API, { headers });
@@ -858,40 +894,70 @@ async function enviarParaGitHub(token) {
   } catch(e) {}
 
   const res = await fetch(GH_API, {
-    method : 'PUT',
+    method: 'PUT',
     headers,
-    body   : JSON.stringify({
-      message: 'Atualiza dados da cerimônia',
-      content: base64,
-      ...(sha && { sha })
-    })
+    body: JSON.stringify({ message: 'Atualiza dados da cerimônia', content, ...(sha && { sha }) })
   });
   return res.ok;
 }
 
 // ============================================================
-// SAVE — salva local SEMPRE, GitHub quando token disponível
+// SAVE
 // ============================================================
 async function salvar() {
-  // 1. Sempre salva local primeiro (instantâneo, nunca falha)
   localStorage.setItem('formatura-senac-dados', JSON.stringify(dados));
 
-  // 2. Tenta sincronizar com GitHub se token disponível
   const token = localStorage.getItem('gh-token');
   if (token) {
-    try {
-      const ok = await enviarParaGitHub(token);
-      if (ok) {
-        showToast('Salvo e sincronizado com GitHub ✅');
-      } else {
-        showToast('Salvo localmente — erro no GitHub (token inválido?)', 'error');
-      }
-    } catch(e) {
-      showToast('Salvo localmente — sem conexão com GitHub', 'error');
-    }
+    showToast('Salvando...', 'info');
+    const ok = await salvarGitHub(token);
+    if (ok) { showToast('Salvo — disponível em todos os dispositivos ✅'); return; }
+    showToast('Erro no GitHub (token inválido?)', 'error');
   } else {
-    showToast('Salvo localmente ✅');
+    showToast('Salvo localmente (configure o token para sincronizar)', 'error');
   }
+}
+
+// ============================================================
+// CONFIGURAÇÕES GERAIS
+// ============================================================
+function preencherFormConfig() {
+  const c = dados.config || {};
+  document.getElementById('cfgUnidade').value    = c.unidade    || '';
+  document.getElementById('cfgArea').value       = c.area       || '';
+  document.getElementById('cfgAno').value        = c.ano        || '';
+  document.getElementById('cfgTecnicoArea').value= c.tecnicoArea|| '';
+  document.getElementById('cfgGerente').value    = c.gerente    || '';
+  document.getElementById('cfgTecnicoEd').value  = c.tecnicoEd  || '';
+  document.getElementById('cfgDocentes').value   = c.docentes   || '';
+  // Pre-preenche área no form de nova turma
+  const areaInput = document.getElementById('areaCurso');
+  if (areaInput && !areaInput.value) areaInput.value = c.area || '';
+  atualizarHeaderDinamico();
+}
+
+function atualizarConfig() {
+  if (!dados.config) dados.config = {};
+  dados.config.unidade     = document.getElementById('cfgUnidade').value.trim();
+  dados.config.area        = document.getElementById('cfgArea').value.trim();
+  dados.config.ano         = document.getElementById('cfgAno').value.trim();
+  dados.config.tecnicoArea = document.getElementById('cfgTecnicoArea').value.trim();
+  dados.config.gerente     = document.getElementById('cfgGerente').value.trim();
+  dados.config.tecnicoEd   = document.getElementById('cfgTecnicoEd').value.trim();
+  dados.config.docentes    = document.getElementById('cfgDocentes').value.trim();
+  atualizarHeaderDinamico();
+}
+
+function atualizarHeaderDinamico() {
+  const c = dados.config || {};
+  document.getElementById('hdrUnidade').textContent = c.unidade || 'Senac';
+  const ano = c.ano ? ` · ${c.ano}` : '';
+  document.getElementById('hdrArea').textContent = (c.area || 'Formaturas') + ano;
+}
+
+function salvarConfig() {
+  atualizarConfig();
+  salvar();
 }
 
 // ============================================================
@@ -907,8 +973,8 @@ function adicionarTurma() {
   const turma = {
     id: Date.now().toString(),
     nome,
-    area: area || 'Gestão e Negócios',
-    ano: ano || '2025',
+    area: area || dados.config?.area || '',
+    ano: ano || dados.config?.ano || new Date().getFullYear().toString(),
     paraninfo: '',
     homenageado: '',
     juramentista: '',
