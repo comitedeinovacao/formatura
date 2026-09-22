@@ -1,5 +1,17 @@
 {
-  "turmas": [],
+  "turmas": [
+    {
+      "id": "1790103123803",
+      "nome": "Técnico em Design de Interiores",
+      "area": "Design e Arquitetura",
+      "ano": "2024-2026",
+      "paraninfo": "",
+      "homenageado": "",
+      "juramentista": "",
+      "orador": "",
+      "alunos": []
+    }
+  ],
   "config": {
     "unidade": "Senac Araçatuba",
     "area": "Design e Arquitetura",
