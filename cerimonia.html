@@ -376,6 +376,21 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-s
   </div>
 </div>
 
+<!-- S10b LISTA DE DOCENTES (gerado por config) -->
+<div class="slide slide-padrao">
+  <div class="grid-bg"></div>
+  <div class="slide-orb orb1"></div>
+  <div class="slide-orb orb2"></div>
+  <div class="scanline"></div>
+  <div class="bg-diagonal"></div>
+  <img class="bg-img" src="aracatuba_laboratorio-hardware4.jpg" alt="">
+  <div class="inner">
+    <div class="kicker fade d1">Composição da Mesa Solene</div>
+    <div class="linha-laranja fade d2"></div>
+    <div id="container-docentes" class="fade d3"></div>
+  </div>
+</div>
+
 <!-- S11 ENTRADA DOS FORMANDOS -->
 <div class="slide slide-padrao" id="ref-entrada">
   <div class="grid-bg"></div>
@@ -780,8 +795,48 @@ function preencherDadosCerimonia() {
     const el = document.getElementById(id);
     if (!el) return;
     const html = renderNomesDual(turmas, campo, role);
-    if (html) el.innerHTML = html;
+    if (html) {
+      el.innerHTML = html;
+    } else {
+      // Campo vazio → oculta o slide inteiro para não aparecer em branco
+      const slide = el.closest('.slide');
+      if (slide) slide.style.display = 'none';
+    }
   });
+
+  // Campos de config (técnico da área, gerente, técnico educacional, docentes)
+  const cfg = dados.config || {};
+  preencherSlideConfig('container-tecnico-area', cfg.tecnicoArea, 'Técnico(a) da Área');
+  preencherSlideConfig('container-gerente',      cfg.gerente,     'Gerente da Unidade');
+  preencherSlideConfig('container-tecnico-ed',   cfg.tecnicoEd,   'Técnico(a) Educacional');
+  preencherSlideDocentes(cfg.docentes);
+}
+
+function preencherSlideConfig(containerId, valor, role) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (valor && valor.trim()) {
+    el.innerHTML = `<div class="t-nome">${formatNome(valor.trim())}</div>
+      <div class="t-role-item">${role}</div>`;
+  } else {
+    const slide = el.closest('.slide');
+    if (slide) slide.style.display = 'none';
+  }
+}
+
+function preencherSlideDocentes(docentesStr) {
+  const el = document.getElementById('container-docentes');
+  if (!el) return;
+  const lista = (docentesStr || '').split('\n').map(s => s.trim()).filter(Boolean);
+  if (!lista.length) {
+    const slide = el.closest('.slide');
+    if (slide) slide.style.display = 'none';
+    return;
+  }
+  // Até 6 docentes em grid
+  el.innerHTML = lista.map(d =>
+    `<div class="t-role-item" style="font-size:clamp(14px,1.4vw,22px);color:#fff;font-weight:600;margin-bottom:6px;">${d}</div>`
+  ).join('');
 }
 
 function formatNome(nome) {
