@@ -93,9 +93,9 @@ html,body{width:100%;height:100%;font-family:'Montserrat',sans-serif;background:
 <div class="page">
 
   <div class="header">
-    <div class="kicker">Senac Araçatuba · Gestão e Negócios</div>
+    <div class="kicker" id="idx-kicker">Senac · Colação de Grau</div>
     <div class="linha-laranja"></div>
-    <div class="titulo"><span class="lar">Colação</span> de Grau<br>2026</div>
+    <div class="titulo"><span class="lar">Colação</span> de Grau<br><span id="idx-ano">2026</span></div>
     <div class="subtitulo">Selecione uma opção para continuar</div>
   </div>
 
@@ -131,11 +131,28 @@ html,body{width:100%;height:100%;font-family:'Montserrat',sans-serif;background:
 
   </div>
 
-  <div class="footer-line">Senac Araçatuba · Colação de Grau · 2026</div>
+  <div class="footer-line" id="idx-footer">Senac · Colação de Grau · 2026</div>
 
 </div>
 
 <script>
+// Lê configurações do localStorage e atualiza textos da tela inicial
+(function() {
+  try {
+    const raw = localStorage.getItem('formatura-senac-dados');
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    const c = d.config || {};
+    const unidade = c.unidade || 'Senac';
+    const area    = c.area    || '';
+    const ano     = c.ano     || '2026';
+    const kicker  = area ? `${unidade} · ${area}` : unidade;
+    document.getElementById('idx-kicker').textContent = kicker;
+    document.getElementById('idx-ano').textContent    = ano;
+    document.getElementById('idx-footer').textContent = `${unidade} · Colação de Grau · ${ano}`;
+  } catch(e) {}
+})();
+
 document.getElementById('btnCerimonia').addEventListener('click', function(e) {
   e.preventDefault();
   const win = window.open('cerimonia.html', '_blank');
